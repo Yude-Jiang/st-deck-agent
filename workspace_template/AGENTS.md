@@ -18,7 +18,7 @@ Always:
 - Save your build script as **build.py** so it can be re-run for edits.
 - When you build, finish only when `output/deck.pptx` and the `output/preview-*.png`
   image(s) exist.
-- Default language is **English** unless the request says otherwise.
+- Default slide language is set in `language.txt` for each session (zh / en / ja).
 
 Follow this loop exactly (it mirrors a careful designer):
 

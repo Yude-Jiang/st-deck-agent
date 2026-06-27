@@ -19,18 +19,34 @@ from pathlib import Path
 from cursor_sdk import LocalAgentOptions
 
 from . import config
-from .sessions import collect_outputs, new_session, restore_session, save_session
+from .sessions import collect_outputs, new_session, restore_session, save_session, session_language
 
 # Live conversational sessions: sid -> {ws, agent, pages}
 chat_sessions: dict[str, dict] = {}
 
+_LANG_LABELS = {
+    "zh": "Simplified Chinese (简体中文)",
+    "en": "English",
+    "ja": "Japanese (日本語)",
+}
+
+
+def _lang_instruction(lang: str) -> str:
+    label = _LANG_LABELS.get(lang, _LANG_LABELS["en"])
+    return (
+        f"Slide language: {label}. Write ALL slide text (titles, message bars, body copy, "
+        f"labels, footnotes) in {label}. Do not mix languages unless the user explicitly "
+        f"requests bilingual content."
+    )
+
+
 _COMMON = """Build EXACTLY {pages} slide(s). Follow skills/st-ppt-brand/SKILL.md for \
 palette, typography, contrast, and layout. Prefer st_brand.py helpers \
-(text_on, closing_slide for external decks). Never use AI images. {uploads}When you \
-build: save build.py, write output/deck_meta.json with \
+(text_on, closing_slide for external decks). Never use AI images. {uploads}{language} \
+When you build: save build.py, write output/deck_meta.json with \
 {{"subject":"<deck title>","filename":"<Subject-Line-YYYY-MM-DD>.pptx"}}, run \
 `python tools/preview.py output/deck.pptx output`, OPEN every preview PNG, fix \
-contrast/size issues, re-render until clean. Default language: English."""
+contrast/size issues, re-render until clean."""
 
 GEN_PROMPT = """You are generating a deck for an internal STMicroelectronics (ST) \
 audience. Follow AGENTS.md.
@@ -51,6 +67,8 @@ output/deck.pptx). MODE = ONE-SHOT, UNATTENDED: do NOT ask questions. Apply the 
 change, rebuild by running build.py, run `python tools/preview.py output/deck.pptx \
 output`, OPEN every output/preview-*.png to verify. Keep everything else unchanged \
 and ST-brand-compliant. Done only when deck.pptx + preview PNG(s) are updated.
+
+{language}
 
 Requested change:
 {instruction}
@@ -94,9 +112,14 @@ def _uploads_note(has_uploads: bool) -> str:
     )
 
 
-def _common(pages: int, has_uploads: bool) -> str:
+def _common(pages: int, has_uploads: bool, language: str) -> str:
     pages = max(1, min(config.MAX_PAGES, int(pages or 1)))
-    return _COMMON.format(pages=pages, uploads=_uploads_note(has_uploads))
+    lang_block = _lang_instruction(language) + " "
+    return _COMMON.format(
+        pages=pages,
+        uploads=_uploads_note(has_uploads),
+        language=lang_block,
+    )
 
 
 # ---------------- agent plumbing ----------------
@@ -151,11 +174,15 @@ async def run_generate(
     sid: str,
     emit,
     has_uploads: bool,
+    language: str = "zh",
 ):
     if _need_key():
         await emit("error", "CURSOR_API_KEY is not set on the server.")
         return collect_outputs(sid, ws)
-    prompt = GEN_PROMPT.format(common=_common(pages, has_uploads), request=request_text)
+    lang = session_language(ws)
+    prompt = GEN_PROMPT.format(
+        common=_common(pages, has_uploads, lang), request=request_text
+    )
     agent = await _create_agent(client, ws)
     try:
         run = await agent.send(prompt)
@@ -174,7 +201,12 @@ async def run_edit(client, sid: str, instruction: str, emit):
         return {"session": sid, "deck": None, "previews": [], "download_name": None}
     agent = await _create_agent(client, ws)
     try:
-        run = await agent.send(EDIT_PROMPT.format(instruction=instruction))
+        lang = session_language(ws)
+        run = await agent.send(
+            EDIT_PROMPT.format(
+                language=_lang_instruction(lang), instruction=instruction
+            )
+        )
         await _stream_run(run, emit)
     finally:
         await agent.close()
@@ -193,14 +225,16 @@ async def chat_start(
     sid: str,
     emit,
     has_uploads: bool,
+    language: str = "zh",
 ):
     if _need_key():
         await emit("error", "CURSOR_API_KEY is not set on the server.")
         return collect_outputs(sid, ws)
+    lang = session_language(ws)
     agent = await _create_agent(client, ws)
     chat_sessions[sid] = {"ws": ws, "agent": agent, "pages": pages}
     prompt = CHAT_FIRST.format(
-        common=_common(pages, has_uploads),
+        common=_common(pages, has_uploads, lang),
         request=request_text,
         uploads_hint=" and ./uploads/ " if has_uploads else " ",
     )
@@ -219,7 +253,9 @@ async def chat_send(client, sid: str, message: str, emit):
             "chat session not found (server may have restarted; start a new conversation)",
         )
         return {"session": sid, "deck": None, "previews": [], "download_name": None}
-    run = await s["agent"].send(f"{CHAT_REMINDER}\n\nUser: {message}")
+    run = await s["agent"].send(
+        f"{CHAT_REMINDER}\n\n{_lang_instruction(session_language(s['ws']))}\n\nUser: {message}"
+    )
     await _stream_run(run, emit)
     await save_session(sid, s["ws"])
     await emit("done", "ok")

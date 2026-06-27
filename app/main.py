@@ -40,6 +40,7 @@ from .sessions import (
     cleanup_expired_sessions,
     deck_download_name,
     new_session,
+    normalize_lang,
 )
 
 TEMPLATES = Path(__file__).resolve().parent / "templates"
@@ -93,6 +94,7 @@ async def api_config():
         "auth_required": bool(config.ACCESS_TOKEN),
         "max_upload_files": config.MAX_UPLOAD_FILES,
         "max_upload_file_mb": config.MAX_UPLOAD_FILE_BYTES // (1024 * 1024),
+        "languages": ["zh", "en", "ja"],
     }
 
 
@@ -168,6 +170,7 @@ async def generate(
     http_request: Request,
     request: str = Form(...),
     pages: int = Form(1),
+    language: str = Form("zh"),
     files: list[UploadFile] = File(default=[]),
 ):
     if rej := _reject(http_request):
@@ -178,11 +181,14 @@ async def generate(
     uploads, up_err = await _read_uploads(files)
     if up_err:
         return JSONResponse({"error": up_err}, status_code=400)
-    sid, ws = await new_session(uploads, request)
+    lang = normalize_lang(language)
+    sid, ws = await new_session(uploads, request, language=lang)
     client = app.state.client
 
     async def factory(emit):
-        return await run_generate(client, request, pages, ws, sid, emit, bool(uploads))
+        return await run_generate(
+            client, request, pages, ws, sid, emit, bool(uploads), language=lang
+        )
 
     async def gen():
         yield _sse({"kind": "session", "text": sid})
@@ -218,6 +224,7 @@ async def chat_start_ep(
     http_request: Request,
     request: str = Form(...),
     pages: int = Form(1),
+    language: str = Form("zh"),
     files: list[UploadFile] = File(default=[]),
 ):
     if rej := _reject(http_request):
@@ -228,11 +235,14 @@ async def chat_start_ep(
     uploads, up_err = await _read_uploads(files)
     if up_err:
         return JSONResponse({"error": up_err}, status_code=400)
-    sid, ws = await new_session(uploads, request)
+    lang = normalize_lang(language)
+    sid, ws = await new_session(uploads, request, language=lang)
     client = app.state.client
 
     async def factory(emit):
-        return await chat_start(client, request, pages, ws, sid, emit, bool(uploads))
+        return await chat_start(
+            client, request, pages, ws, sid, emit, bool(uploads), language=lang
+        )
 
     async def gen():
         yield _sse({"kind": "session", "text": sid})

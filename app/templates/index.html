@@ -124,11 +124,11 @@
 <header>
   <div class="logo">
     <div class="mark">ST</div>
-    <div class="brand"><b>Deck Agent</b><span>品牌合规 PPT · 一键成稿</span></div>
+    <div class="brand"><b>Deck Agent</b><span data-i18n="brandSub">品牌合规 PPT · 一键成稿</span></div>
   </div>
   <div class="hdr-right">
     <div id="tokenRow">
-      <label>访问口令 <input id="token" type="password" placeholder="ACCESS_TOKEN" autocomplete="off"/></label>
+      <label><span data-i18n="tokenLabel">访问口令</span> <input id="token" type="password" placeholder="ACCESS_TOKEN" autocomplete="off"/></label>
     </div>
     <div class="org"><span class="dot"></span>STMicroelectronics</div>
   </div>
@@ -136,75 +136,82 @@
 
 <main>
   <section class="panel">
-    <div class="phead"><span class="accent" style="background:var(--yellow)"></span><h2>撰写需求</h2><span class="sub">贴需求 / URL，可附参考文档</span></div>
+    <div class="phead"><span class="accent" style="background:var(--yellow)"></span><h2 data-i18n="panelBrief">撰写需求</h2><span class="sub" data-i18n="panelBriefSub">贴需求 / URL，可附参考文档</span></div>
     <div class="body">
-      <textarea id="req" placeholder="例：根据上传文档做一页 ST 品牌合规 PPT 给领导汇报，突出三个核心数据…"></textarea>
+      <textarea id="req" data-i18n-placeholder="reqPlaceholder" placeholder="例：根据上传文档做一页 ST 品牌合规 PPT 给领导汇报，突出三个核心数据…"></textarea>
 
       <div class="chips" id="chips">
-        <span class="lbl">试试</span>
-        <button type="button" class="chip" data-fill="做 1 页 STM32 生态总览，面向客户介绍平台、产品线与生态支持。">STM32 生态总览</button>
-        <button type="button" class="chip" data-fill="根据上传文档做一页 ST 品牌合规 PPT，给领导汇报，突出三个核心数据。">品牌合规汇报</button>
-        <button type="button" class="chip" data-fill="把这份产品资料浓缩成 3 页重点页，每页一个核心信息。">资料浓缩 3 页</button>
+        <span class="lbl" data-i18n="tryLabel">试试</span>
       </div>
 
       <div class="rule"></div>
 
       <div class="group">
-        <span class="t">页数</span>
+        <span class="t" data-i18n="pagesLabel">页数</span>
         <div class="seg" id="seg"></div>
       </div>
 
       <div class="group">
-        <span class="t">参考文档 <span class="opt">可选</span></span>
+        <span class="t" data-i18n="uiLangLabel">界面语言</span>
+        <div class="seg" id="uiLangSeg"></div>
+      </div>
+
+      <div class="group">
+        <span class="t" data-i18n="deckLangLabel">幻灯片语言</span>
+        <div class="seg" id="deckLangSeg"></div>
+      </div>
+
+      <div class="group">
+        <span class="t"><span data-i18n="refDocs">参考文档</span> <span class="opt" data-i18n="optional">可选</span></span>
         <label class="drop" id="drop">
           <input id="docs" type="file" multiple accept=".pdf,.docx,.pptx,.xlsx,.csv,.txt,.md,.png,.jpg,.jpeg" hidden/>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3CB4E6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5-5 5 5"></path><path d="M12 5v12"></path></svg>
-          <span class="d1" id="dropLabel">拖拽或点击选择文件</span>
-          <span class="d2">PDF · Word · PPT · Excel · 图片</span>
+          <span class="d1" id="dropLabel" data-i18n="dropLabel">拖拽或点击选择文件</span>
+          <span class="d2" data-i18n="dropTypes">PDF · Word · PPT · Excel · 图片</span>
         </label>
         <div class="filechips" id="filechips"></div>
       </div>
 
       <div class="toggle" id="chatToggle">
         <span class="track" id="track"><span class="knob"></span></span>
-        <span class="tx"><b>对话模式</b><span>先出大纲、补充信息，确认后再生成（Beta）</span></span>
+        <span class="tx"><b data-i18n="chatMode">对话模式</b><span data-i18n="chatModeSub">先出大纲、补充信息，确认后再生成（Beta）</span></span>
       </div>
 
-      <button type="button" class="cta" id="go"><span>生成 PPT</span></button>
+      <button type="button" class="cta" id="go"><span data-i18n="btnGenerate">生成 PPT</span></button>
     </div>
   </section>
 
   <section class="panel work">
-    <div class="phead"><span class="accent" style="background:var(--blue)"></span><h2>工作台</h2><span class="pill idle" id="pill">待命</span></div>
+    <div class="phead"><span class="accent" style="background:var(--blue)"></span><h2 data-i18n="panelWork">工作台</h2><span class="pill idle" id="pill" data-i18n="pillIdle">待命</span></div>
     <div class="wbody">
       <div id="idle">
-        <p class="lead">Agent 会像设计师一样按四步工作，全程在此实时展示，完成后输出每页预览与可下载的 .pptx。</p>
-        <div class="step"><span class="n">01</span><div class="tt"><b>理解与收集</b><span>读取需求与上传文档，提取数据、术语；含 URL 时抓真实截图。</span></div></div>
-        <div class="step"><span class="n">02</span><div class="tt"><b>套用 ST 品牌</b><span>Title-Only 版式 + 20pt 信息条，Arial，主色限 2–3 色并强制对比度。</span></div></div>
-        <div class="step"><span class="n">03</span><div class="tt"><b>构建并渲染</b><span>用 st_brand.py 写 build.py 输出 .pptx，再转成每页 PNG 预览。</span></div></div>
-        <div class="step"><span class="n">04</span><div class="tt"><b>自检与修正</b><span>逐张核对溢出、对比度、字号与配色，修脚本重渲染直到干净。</span></div></div>
+        <p class="lead" data-i18n="idleLead">Agent 会像设计师一样按四步工作，全程在此实时展示，完成后输出每页预览与可下载的 .pptx。</p>
+        <div class="step"><span class="n">01</span><div class="tt"><b data-i18n="step1t">理解与收集</b><span data-i18n="step1d">读取需求与上传文档，提取数据、术语；含 URL 时抓真实截图。</span></div></div>
+        <div class="step"><span class="n">02</span><div class="tt"><b data-i18n="step2t">套用 ST 品牌</b><span data-i18n="step2d">Title-Only 版式 + 20pt 信息条，Arial，主色限 2–3 色并强制对比度。</span></div></div>
+        <div class="step"><span class="n">03</span><div class="tt"><b data-i18n="step3t">构建并渲染</b><span data-i18n="step3d">用 st_brand.py 写 build.py 输出 .pptx，再转成每页 PNG 预览。</span></div></div>
+        <div class="step"><span class="n">04</span><div class="tt"><b data-i18n="step4t">自检与修正</b><span data-i18n="step4d">逐张核对溢出、对比度、字号与配色，修脚本重渲染直到干净。</span></div></div>
       </div>
 
       <div id="log" style="display:none"></div>
 
       <div id="done" style="display:none">
         <div class="donehead">
-          <span class="cnt">已生成 <b id="cnt">0</b> 页</span>
+          <span class="cnt" id="doneCnt"></span>
           <span id="dl"></span>
         </div>
         <div id="slides"></div>
       </div>
 
       <div class="followup" id="edit">
-        <h3>在线编辑</h3>
-        <textarea id="editreq" placeholder="例：标题改成…；信息条换深蓝底"></textarea>
-        <div class="row"><button type="button" id="applyEdit">应用修改</button><span class="st" id="editstatus"></span></div>
+        <h3 data-i18n="editTitle">在线编辑</h3>
+        <textarea id="editreq" data-i18n-placeholder="editPlaceholder" placeholder="例：标题改成…；信息条换深蓝底"></textarea>
+        <div class="row"><button type="button" id="applyEdit" data-i18n="applyEdit">应用修改</button><span class="st" id="editstatus"></span></div>
       </div>
 
       <div class="followup" id="chatbox">
-        <h3>继续对话</h3>
-        <textarea id="chatmsg" placeholder="补充信息 / 修改大纲… 确认后输入「确认」或 OK 开始生成"></textarea>
-        <div class="row"><button type="button" id="sendChat">发送</button><span class="st" id="chatstatus"></span></div>
+        <h3 data-i18n="chatTitle">继续对话</h3>
+        <textarea id="chatmsg" data-i18n-placeholder="chatPlaceholder" placeholder="补充信息 / 修改大纲… 确认后输入「确认」或 OK 开始生成"></textarea>
+        <div class="row"><button type="button" id="sendChat" data-i18n="sendChat">发送</button><span class="st" id="chatstatus"></span></div>
       </div>
     </div>
   </section>
@@ -215,17 +222,278 @@ const $ = s => document.querySelector(s);
 const LS_TOKEN = 'st_deck_token';
 const LS_SESSION = 'st_deck_session';
 const LS_CHAT = 'st_deck_chat';
+const LS_UI_LANG = 'st_deck_ui_lang';
+const LS_DECK_LANG = 'st_deck_deck_lang';
+
+const LANG_OPTIONS = [
+  { id: 'zh', label: '中文' },
+  { id: 'en', label: 'English' },
+  { id: 'ja', label: '日本語' },
+];
+
+const I18N = {
+  zh: {
+    brandSub: '品牌合规 PPT · 一键成稿',
+    tokenLabel: '访问口令',
+    panelBrief: '撰写需求',
+    panelBriefSub: '贴需求 / URL，可附参考文档',
+    reqPlaceholder: '例：根据上传文档做一页 ST 品牌合规 PPT 给领导汇报，突出三个核心数据…',
+    tryLabel: '试试',
+    pagesLabel: '页数',
+    uiLangLabel: '界面语言',
+    deckLangLabel: '幻灯片语言',
+    refDocs: '参考文档',
+    optional: '可选',
+    dropLabel: '拖拽或点击选择文件',
+    dropLabelSel: n => `已选 ${n} 个文件，点击重选`,
+    dropTypes: 'PDF · Word · PPT · Excel · 图片',
+    chatMode: '对话模式',
+    chatModeSub: '先出大纲、补充信息，确认后再生成（Beta）',
+    btnGenerate: '生成 PPT',
+    btnDiscuss: '开始讨论',
+    btnStop: '停止',
+    panelWork: '工作台',
+    pillIdle: '待命',
+    pillRun: '运行中',
+    pillDone: '完成',
+    pillErr: '出错',
+    pillStopped: '已停止',
+    idleLead: 'Agent 会像设计师一样按四步工作，全程在此实时展示，完成后输出每页预览与可下载的 .pptx。',
+    step1t: '理解与收集', step1d: '读取需求与上传文档，提取数据、术语；含 URL 时抓真实截图。',
+    step2t: '套用 ST 品牌', step2d: 'Title-Only 版式 + 20pt 信息条，Arial，主色限 2–3 色并强制对比度。',
+    step3t: '构建并渲染', step3d: '用 st_brand.py 写 build.py 输出 .pptx，再转成每页 PNG 预览。',
+    step4t: '自检与修正', step4d: '逐张核对溢出、对比度、字号与配色，修脚本重渲染直到干净。',
+    donePages: n => `已生成 <b>${n}</b> 页`,
+    download: '下载',
+    slideAlt: n => `第 ${n} 页`,
+    editTitle: '在线编辑',
+    editPlaceholder: '例：标题改成…；信息条换深蓝底',
+    applyEdit: '应用修改',
+    chatTitle: '继续对话',
+    chatPlaceholder: '补充信息 / 修改大纲… 确认后输入「确认」或 OK 开始生成',
+    sendChat: '发送',
+    statusBusy: '处理中…',
+    statusDone: '完成',
+    statusErr: '出错',
+    errRequest: s => `请求失败 (${s})`,
+    errParse: '无法解析服务器消息',
+    errResult: '结果解析失败',
+    errNetwork: '网络错误',
+    logStopped: '—— 已停止 ——',
+    logEdit: v => `—— 编辑 —— ${v}`,
+    logYou: v => `—— 你 —— ${v}`,
+    chips: [
+      { label: 'STM32 生态总览', fill: '做 1 页 STM32 生态总览，面向客户介绍平台、产品线与生态支持。' },
+      { label: '品牌合规汇报', fill: '根据上传文档做一页 ST 品牌合规 PPT，给领导汇报，突出三个核心数据。' },
+      { label: '资料浓缩 3 页', fill: '把这份产品资料浓缩成 3 页重点页，每页一个核心信息。' },
+    ],
+  },
+  en: {
+    brandSub: 'Brand-compliant PPT · One-click decks',
+    tokenLabel: 'Access token',
+    panelBrief: 'Your brief',
+    panelBriefSub: 'Paste requirements / URLs; attach reference files',
+    reqPlaceholder: 'e.g. One ST-brand slide for leadership, highlighting three key metrics from the upload…',
+    tryLabel: 'Try',
+    pagesLabel: 'Pages',
+    uiLangLabel: 'Interface language',
+    deckLangLabel: 'Slide language',
+    refDocs: 'Reference files',
+    optional: 'optional',
+    dropLabel: 'Drag & drop or click to choose files',
+    dropLabelSel: n => `${n} file(s) selected — click to change`,
+    dropTypes: 'PDF · Word · PPT · Excel · Images',
+    chatMode: 'Chat mode',
+    chatModeSub: 'Outline first, refine, then build after you confirm (Beta)',
+    btnGenerate: 'Generate PPT',
+    btnDiscuss: 'Start discussion',
+    btnStop: 'Stop',
+    panelWork: 'Workbench',
+    pillIdle: 'Ready',
+    pillRun: 'Running',
+    pillDone: 'Done',
+    pillErr: 'Error',
+    pillStopped: 'Stopped',
+    idleLead: 'The agent works like a designer in four steps. Watch progress here; previews and a downloadable .pptx appear when finished.',
+    step1t: 'Understand & gather', step1d: 'Read the brief and uploads; capture URLs with real screenshots.',
+    step2t: 'Apply ST brand', step2d: 'Title-Only layout, 20pt message bar, Arial, 2–3 colors with enforced contrast.',
+    step3t: 'Build & render', step3d: 'Write build.py via st_brand.py, export .pptx, render PNG previews.',
+    step4t: 'Self-check & fix', step4d: 'Review overflow, contrast, type and colors; fix and re-render until clean.',
+    donePages: n => `<b>${n}</b> slide(s) generated`,
+    download: 'Download',
+    slideAlt: n => `Slide ${n}`,
+    editTitle: 'Edit online',
+    editPlaceholder: 'e.g. Change the title…; switch message bar to dark blue',
+    applyEdit: 'Apply changes',
+    chatTitle: 'Continue chat',
+    chatPlaceholder: 'Refine the outline… type OK or confirm to start building',
+    sendChat: 'Send',
+    statusBusy: 'Working…',
+    statusDone: 'Done',
+    statusErr: 'Error',
+    errRequest: s => `Request failed (${s})`,
+    errParse: 'Could not parse server message',
+    errResult: 'Could not parse result',
+    errNetwork: 'Network error',
+    logStopped: '—— Stopped ——',
+    logEdit: v => `—— Edit —— ${v}`,
+    logYou: v => `—— You —— ${v}`,
+    chips: [
+      { label: 'STM32 ecosystem', fill: 'One slide STM32 ecosystem overview for customers: platform, portfolio, ecosystem support.' },
+      { label: 'Brand-compliant brief', fill: 'One ST-brand slide for leadership from the upload, three key metrics.' },
+      { label: '3-slide summary', fill: 'Condense this product material into 3 slides, one key message per slide.' },
+    ],
+  },
+  ja: {
+    brandSub: 'ブランド準拠 PPT · ワンクリック生成',
+    tokenLabel: 'アクセストークン',
+    panelBrief: '要件入力',
+    panelBriefSub: '要件 / URL を貼付、参考資料を添付可',
+    reqPlaceholder: '例：アップロード資料から ST ブランド準拠の 1 枚スライドを作成、3 つの核心データを強調…',
+    tryLabel: '例',
+    pagesLabel: '枚数',
+    uiLangLabel: '画面言語',
+    deckLangLabel: 'スライド言語',
+    refDocs: '参考資料',
+    optional: '任意',
+    dropLabel: 'ドラッグ＆ドロップまたはクリックで選択',
+    dropLabelSel: n => `${n} 件選択済み — クリックで変更`,
+    dropTypes: 'PDF · Word · PPT · Excel · 画像',
+    chatMode: '対話モード',
+    chatModeSub: 'まずアウトライン、確認後に生成（Beta）',
+    btnGenerate: 'PPT を生成',
+    btnDiscuss: 'ディスカッション開始',
+    btnStop: '停止',
+    panelWork: 'ワークベンチ',
+    pillIdle: '待機',
+    pillRun: '実行中',
+    pillDone: '完了',
+    pillErr: 'エラー',
+    pillStopped: '停止済み',
+    idleLead: 'Agent が 4 ステップでデッキを作成。進捗をリアルタイム表示し、完了後にプレビューと .pptx をダウンロードできます。',
+    step1t: '理解と収集', step1d: '要件と資料を読み取り、URL は実スクリーンショットを取得。',
+    step2t: 'ST ブランド適用', step2d: 'Title-Only、20pt メッセージバー、Arial、2–3 色とコントラスト。',
+    step3t: '構築とレンダリング', step3d: 'st_brand.py で build.py を作成し .pptx と PNG プレビューを出力。',
+    step4t: '自己チェック', step4d: 'はみ出し・コントラスト・配色を確認し、修正して再レンダリング。',
+    donePages: n => `<b>${n}</b> 枚生成済み`,
+    download: 'ダウンロード',
+    slideAlt: n => `スライド ${n}`,
+    editTitle: 'オンライン編集',
+    editPlaceholder: '例：タイトルを変更…；メッセージバーを濃紺に',
+    applyEdit: '変更を適用',
+    chatTitle: '対話を続ける',
+    chatPlaceholder: 'アウトラインを修正…「確認」または OK で生成開始',
+    sendChat: '送信',
+    statusBusy: '処理中…',
+    statusDone: '完了',
+    statusErr: 'エラー',
+    errRequest: s => `リクエスト失敗 (${s})`,
+    errParse: 'サーバーメッセージを解析できません',
+    errResult: '結果を解析できません',
+    errNetwork: 'ネットワークエラー',
+    logStopped: '—— 停止しました ——',
+    logEdit: v => `—— 編集 —— ${v}`,
+    logYou: v => `—— あなた —— ${v}`,
+    chips: [
+      { label: 'STM32 エコシステム', fill: 'STM32 エコシステム概要 1 枚：プラットフォーム、製品ライン、エコシステム支援。' },
+      { label: 'ブランド準拠報告', fill: 'アップロード資料から ST ブランド準拠 1 枚、3 つの核心データを強調。' },
+      { label: '3 枚に要約', fill: '製品資料を 3 枚に要約、各スライド 1 つの核心メッセージ。' },
+    ],
+  },
+};
 
 let currentSession = null;
 let chatActive = false;
 let pages = 1;
+let uiLang = 'zh';
+let deckLang = 'zh';
 let abortCtl = null;
 let hadError = false;
 let streamBuf = { thinking: null, text: null };
 let appConfig = { max_pages: 6, auth_required: false };
+let slideCount = 0;
 
 try { currentSession = localStorage.getItem(LS_SESSION) || null; } catch (_) {}
 try { chatActive = localStorage.getItem(LS_CHAT) === '1'; } catch (_) {}
+try { uiLang = localStorage.getItem(LS_UI_LANG) || 'zh'; } catch (_) {}
+try { deckLang = localStorage.getItem(LS_DECK_LANG) || uiLang; } catch (_) {}
+
+function t(key, ...args) {
+  const pack = I18N[uiLang] || I18N.zh;
+  const val = pack[key];
+  if (typeof val === 'function') return val(...args);
+  return val ?? I18N.zh[key] ?? key;
+}
+
+function applyI18n() {
+  document.documentElement.lang = uiLang === 'ja' ? 'ja' : uiLang === 'en' ? 'en' : 'zh';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.dataset.i18n;
+    const val = t(k);
+    if (val != null && typeof val !== 'function') el.textContent = val;
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.placeholder = t(el.dataset.i18nPlaceholder);
+  });
+  rebuildChips();
+  renderFiles();
+  updateDoneCnt();
+  syncChatToggle();
+  if (!abortCtl) setBusy(false);
+}
+
+function saveLang() {
+  try {
+    localStorage.setItem(LS_UI_LANG, uiLang);
+    localStorage.setItem(LS_DECK_LANG, deckLang);
+  } catch (_) {}
+}
+
+function buildLangSeg(containerId, current, onPick) {
+  const seg = $(containerId);
+  seg.innerHTML = '';
+  LANG_OPTIONS.forEach(opt => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = opt.label;
+    if (opt.id === current) b.classList.add('on');
+    b.onclick = () => {
+      onPick(opt.id);
+      [...seg.children].forEach(c => c.classList.toggle('on', c === b));
+    };
+    seg.appendChild(b);
+  });
+}
+
+function initLangSegs() {
+  buildLangSeg('#uiLangSeg', uiLang, id => {
+    uiLang = id;
+    saveLang();
+    applyI18n();
+  });
+  buildLangSeg('#deckLangSeg', deckLang, id => {
+    deckLang = id;
+    saveLang();
+  });
+}
+
+function rebuildChips() {
+  const wrap = $('#chips');
+  wrap.querySelectorAll('.chip').forEach(c => c.remove());
+  t('chips').forEach(c => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip';
+    b.dataset.fill = c.fill;
+    b.textContent = c.label;
+    b.onclick = () => { $('#req').value = c.fill; $('#req').focus(); };
+    wrap.appendChild(b);
+  });
+}
+
+function updateDoneCnt() {
+  $('#doneCnt').innerHTML = t('donePages', slideCount);
+}
 
 function saveSession() {
   try {
@@ -268,6 +536,8 @@ async function loadConfig() {
     if (r.ok) appConfig = await r.json();
   } catch (_) {}
   buildPageSeg();
+  initLangSegs();
+  applyI18n();
   if (appConfig.auth_required) {
     $('#tokenRow').style.display = 'flex';
     const saved = localStorage.getItem(LS_TOKEN);
@@ -295,14 +565,9 @@ function buildPageSeg() {
 
 $('#token').addEventListener('change', saveToken);
 
-$('#chips').querySelectorAll('.chip').forEach(c => {
-  c.onclick = () => { $('#req').value = c.dataset.fill; $('#req').focus(); };
-});
-
 function syncChatToggle() {
   $('#track').classList.toggle('on', chatActive);
-  const label = chatActive ? '开始讨论' : '生成 PPT';
-  if (!abortCtl) $('#go').querySelector('span').textContent = label;
+  if (!abortCtl) $('#go').querySelector('span').textContent = chatActive ? t('btnDiscuss') : t('btnGenerate');
 }
 
 $('#chatToggle').onclick = () => {
@@ -317,9 +582,7 @@ const drop = $('#drop');
 function renderFiles() {
   const fs = [...docs.files];
   drop.classList.toggle('has', fs.length > 0);
-  $('#dropLabel').textContent = fs.length
-    ? `已选 ${fs.length} 个文件，点击重选`
-    : '拖拽或点击选择文件';
+  $('#dropLabel').textContent = fs.length ? t('dropLabelSel', fs.length) : t('dropLabel');
   $('#filechips').innerHTML = '';
   fs.forEach(f => {
     const s = document.createElement('span');
@@ -387,7 +650,7 @@ function showPhase(which) {
 
 async function streamSSE(resp, onEvent) {
   if (!resp.ok) {
-    let msg = '请求失败 (' + resp.status + ')';
+    let msg = t('errRequest', resp.status);
     try {
       const j = await resp.json();
       if (j.error) msg = j.error;
@@ -407,7 +670,7 @@ async function streamSSE(resp, onEvent) {
       buf = buf.slice(idx + 2);
       if (!line.startsWith('data:')) continue;
       try { onEvent(JSON.parse(line.slice(5).trim())); }
-      catch (_) { logLine('err', '⚠ 无法解析服务器消息'); hadError = true; }
+      catch (_) { logLine('err', '⚠ ' + t('errParse')); hadError = true; }
     }
   }
 }
@@ -419,10 +682,11 @@ function renderResult(r) {
   (r.previews || []).forEach((url, i) => {
     const img = document.createElement('img');
     img.src = fileUrl(url);
-    img.alt = 'slide ' + (i + 1);
+    img.alt = t('slideAlt', i + 1);
     slides.appendChild(img);
   });
-  $('#cnt').textContent = (r.previews || []).length;
+  slideCount = (r.previews || []).length;
+  updateDoneCnt();
   const dl = $('#dl');
   dl.innerHTML = '';
   if (r.deck) {
@@ -431,7 +695,7 @@ function renderResult(r) {
     a.href = fileUrl(r.deck);
     const fn = r.download_name || 'deck.pptx';
     a.download = fn;
-    a.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#03234B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5 5 5-5"></path><path d="M12 15V3"></path></svg> 下载 ' + fn;
+    a.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#03234B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5 5 5-5"></path><path d="M12 15V3"></path></svg> ' + t('download') + ' ' + fn;
     dl.appendChild(a);
   }
   if (r.deck || (r.previews && r.previews.length)) showPhase('done');
@@ -450,7 +714,7 @@ function handle(ev) {
   else if (ev.kind === 'result') {
     resetStreamBuf();
     try { renderResult(JSON.parse(ev.text)); }
-    catch (_) { logLine('err', '⚠ 结果解析失败'); hadError = true; }
+    catch (_) { logLine('err', '⚠ ' + t('errResult')); hadError = true; }
   }
 }
 
@@ -458,6 +722,7 @@ function buildFormData() {
   const fd = new FormData();
   fd.append('request', $('#req').value.trim());
   fd.append('pages', String(pages));
+  fd.append('language', deckLang);
   for (const f of docs.files) fd.append('files', f);
   return fd;
 }
@@ -468,22 +733,22 @@ function setBusy(running) {
   if (running) {
     go.disabled = false;
     go.classList.add('stop');
-    go.querySelector('span').textContent = '停止';
+    go.querySelector('span').textContent = t('btnStop');
   } else {
     go.classList.remove('stop');
     go.disabled = false;
-    go.querySelector('span').textContent = chatActive ? '开始讨论' : '生成 PPT';
+    go.querySelector('span').textContent = chatActive ? t('btnDiscuss') : t('btnGenerate');
   }
 }
 
 async function runStream(url, opts, statusEl) {
   hadError = false;
   saveToken();
-  setPill('run', '运行中');
+  setPill('run', t('pillRun'));
   showPhase('run');
   setBusy(true);
   abortCtl = new AbortController();
-  if (statusEl) { statusEl.textContent = '处理中…'; statusEl.className = 'st'; }
+  if (statusEl) { statusEl.textContent = t('statusBusy'); statusEl.className = 'st'; }
   try {
     const resp = await fetch(url, {
       ...opts,
@@ -491,21 +756,21 @@ async function runStream(url, opts, statusEl) {
       headers: { ...authHeaders(), ...(opts.headers || {}) },
     });
     await streamSSE(resp, handle);
-    if (hadError) setPill('err', '出错');
-    else setPill('done', '完成');
+    if (hadError) setPill('err', t('pillErr'));
+    else setPill('done', t('pillDone'));
     if (statusEl) {
-      statusEl.textContent = hadError ? '出错' : '完成';
+      statusEl.textContent = hadError ? t('statusErr') : t('statusDone');
       statusEl.className = hadError ? 'st err' : 'st';
     }
   } catch (e) {
     if (e.name === 'AbortError') {
-      logLine('line', '—— 已停止 ——');
-      setPill('idle', '已停止');
+      logLine('line', t('logStopped'));
+      setPill('idle', t('pillStopped'));
       if (statusEl) statusEl.textContent = '';
     } else {
-      logLine('err', '⚠ ' + (e.message || '网络错误'));
-      setPill('err', '出错');
-      if (statusEl) { statusEl.textContent = '出错'; statusEl.className = 'st err'; }
+      logLine('err', '⚠ ' + (e.message || t('errNetwork')));
+      setPill('err', t('pillErr'));
+      if (statusEl) { statusEl.textContent = t('statusErr'); statusEl.className = 'st err'; }
       hadError = true;
     }
   } finally {
@@ -535,7 +800,7 @@ $('#req').addEventListener('keydown', e => {
 $('#applyEdit').onclick = async () => {
   const v = $('#editreq').value.trim();
   if (!v || !currentSession) return;
-  logLine('line', '—— 编辑 —— ' + v);
+  logLine('line', t('logEdit', v));
   await runStream('/edit', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -546,7 +811,7 @@ $('#applyEdit').onclick = async () => {
 $('#sendChat').onclick = async () => {
   const v = $('#chatmsg').value.trim();
   if (!v || !currentSession) return;
-  logLine('line', '—— 你 —— ' + v);
+  logLine('line', t('logYou', v));
   $('#chatmsg').value = '';
   await runStream('/chat/send', {
     method: 'POST',

@@ -24,7 +24,17 @@ def touch_session(ws: Path) -> None:
     (ws / ".last_touch").write_text(str(time.time()), encoding="utf-8")
 
 
-def _new_session_sync(uploads: list[tuple[str, bytes]], request_text: str) -> tuple[str, Path]:
+SUPPORTED_LANGS = frozenset({"zh", "en", "ja"})
+
+
+def normalize_lang(raw: str | None) -> str:
+    lang = (raw or "zh").strip().lower()
+    return lang if lang in SUPPORTED_LANGS else "zh"
+
+
+def _new_session_sync(
+    uploads: list[tuple[str, bytes]], request_text: str, language: str = "zh"
+) -> tuple[str, Path]:
     sid = uuid.uuid4().hex[:12]
     ws = config.SESSIONS / sid
     shutil.copytree(config.TEMPLATE, ws)
@@ -36,6 +46,7 @@ def _new_session_sync(uploads: list[tuple[str, bytes]], request_text: str) -> tu
         (up / safe).write_bytes(data)
     if request_text.strip():
         (ws / "request.txt").write_text(request_text.strip(), encoding="utf-8")
+    (ws / "language.txt").write_text(normalize_lang(language), encoding="utf-8")
     touch_session(ws)
     return sid, ws
 
@@ -119,10 +130,11 @@ def cleanup_expired_sessions(chat_sessions: dict | None = None) -> int:
 async def new_session(
     uploads: list[tuple[str, bytes]] | None = None,
     request_text: str = "",
+    language: str = "zh",
 ) -> tuple[str, Path]:
     loop = asyncio.get_running_loop()
     return await loop.run_in_executor(
-        None, _new_session_sync, uploads or [], request_text
+        None, _new_session_sync, uploads or [], request_text, language
     )
 
 
@@ -147,6 +159,16 @@ def _slug_filename(subject: str) -> str:
     if not slug:
         slug = "ST-Deck"
     return f"{slug}-{date.today().isoformat()}.pptx"
+
+
+def session_language(ws: Path) -> str:
+    p = ws / "language.txt"
+    if p.exists():
+        try:
+            return normalize_lang(p.read_text(encoding="utf-8"))
+        except OSError:
+            pass
+    return "zh"
 
 
 def deck_download_name(ws: Path) -> str:
