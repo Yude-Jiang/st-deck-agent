@@ -27,6 +27,10 @@
   .dot{width:7px;height:7px;border-radius:50%;background:#46d39a;box-shadow:0 0 0 3px rgba(70,211,154,.18);}
   #tokenRow{display:none;align-items:center;gap:8px;font-size:12px;color:#9BB8D0;}
   #tokenRow input{padding:6px 10px;border:0;border-radius:6px;font-size:12px;min-width:140px;}
+  .hdr-lang{display:flex;align-items:center;gap:4px;}
+  .hdr-lang button{padding:4px 9px;border:1px solid #3A5A7A;background:transparent;color:#9BB8D0;border-radius:5px;font-size:11px;font-weight:bold;cursor:pointer;transition:.15s;line-height:1.2;}
+  .hdr-lang button:hover{border-color:#7FA8C9;color:#C8D9EA;}
+  .hdr-lang button.on{border-color:var(--yellow);background:rgba(255,210,0,.12);color:var(--yellow);}
 
   main{width:100%;max-width:1280px;margin:0 auto;padding:26px 30px 40px;display:grid;grid-template-columns:minmax(360px,40%) 1fr;gap:24px;align-items:start;}
   @media (max-width:880px){ main{grid-template-columns:1fr;} header{height:auto;padding:14px 18px;} }
@@ -130,6 +134,7 @@
     <div id="tokenRow">
       <label><span data-i18n="tokenLabel">访问口令</span> <input id="token" type="password" placeholder="ACCESS_TOKEN" autocomplete="off"/></label>
     </div>
+    <div class="hdr-lang" id="uiLangSeg"></div>
     <div class="org"><span class="dot"></span>STMicroelectronics</div>
   </div>
 </header>
@@ -149,11 +154,6 @@
       <div class="group">
         <span class="t" data-i18n="pagesLabel">页数</span>
         <div class="seg" id="seg"></div>
-      </div>
-
-      <div class="group">
-        <span class="t" data-i18n="uiLangLabel">界面语言</span>
-        <div class="seg" id="uiLangSeg"></div>
       </div>
 
       <div class="group">
@@ -225,7 +225,13 @@ const LS_CHAT = 'st_deck_chat';
 const LS_UI_LANG = 'st_deck_ui_lang';
 const LS_DECK_LANG = 'st_deck_deck_lang';
 
-const LANG_OPTIONS = [
+const UI_LANG_OPTIONS = [
+  { id: 'en', label: 'En' },
+  { id: 'ja', label: '日' },
+  { id: 'zh', label: '中' },
+];
+
+const DECK_LANG_OPTIONS = [
   { id: 'zh', label: '中文' },
   { id: 'en', label: 'English' },
   { id: 'ja', label: '日本語' },
@@ -449,10 +455,10 @@ function saveLang() {
   } catch (_) {}
 }
 
-function buildLangSeg(containerId, current, onPick) {
+function buildLangSeg(containerId, options, current, onPick) {
   const seg = $(containerId);
   seg.innerHTML = '';
-  LANG_OPTIONS.forEach(opt => {
+  options.forEach(opt => {
     const b = document.createElement('button');
     b.type = 'button';
     b.textContent = opt.label;
@@ -466,12 +472,12 @@ function buildLangSeg(containerId, current, onPick) {
 }
 
 function initLangSegs() {
-  buildLangSeg('#uiLangSeg', uiLang, id => {
+  buildLangSeg('#uiLangSeg', UI_LANG_OPTIONS, uiLang, id => {
     uiLang = id;
     saveLang();
     applyI18n();
   });
-  buildLangSeg('#deckLangSeg', deckLang, id => {
+  buildLangSeg('#deckLangSeg', DECK_LANG_OPTIONS, deckLang, id => {
     deckLang = id;
     saveLang();
   });
