@@ -38,6 +38,7 @@ Follow this loop exactly (it mirrors a careful designer):
 - A ready-made helper is in `st_brand.py` — **prefer it**. It exposes the exact ST
   palette and builders: `new_deck`, `title_only_slide`, `corner_accent`, `add_title`,
   `add_message_bar`, `presentation_title_slide`, `agenda_slide`, `section_title_slide`,
+  `left_image_icon_rows_slide`, `left_image_tiered_list_slide`, `migration_timeline_circles_slide`,
   `box`, `bullet_box`, `add_cards_row`, `add_activation_timeline`,
   `timeline_template_slide`, `arrow`, `dashed_container`, `label`, `footer`,
   `closing_slide`, and **`text_on(fill_color)`** for contrast.
@@ -49,6 +50,15 @@ Follow this loop exactly (it mirrors a careful designer):
     and product-focus tracks. Compose from `arrow`, `box`, `label`, `bullet_box`.
     Reference: `skills/st-ppt-brand/references/timeline-organic-paid-lanes.png`.
   - **`timeline-era-cards`** — market evolution / generational history (era cards + photo strip).
+  - **`left-image-icon-rows`** — left hero + yellow icon tiles + gray statement rows + punchline.
+    Use `left_image_icon_rows_slide(...)`; pass `img_path` or leave placeholder.
+    Reference: `skills/st-ppt-brand/references/left-image-icon-rows.png`.
+  - **`migration-timeline-circles`** — phased migration timeline with callout circles.
+    Use `migration_timeline_circles_slide(...)`.
+    Reference: `skills/st-ppt-brand/references/migration-timeline-circles.png`.
+  - **`left-image-tiered-list`** — hero + overlapping message bar + category bullet rows.
+    Use `left_image_tiered_list_slide(...)`.
+    Reference: `skills/st-ppt-brand/references/left-image-tiered-list.png`.
   See `skills/st-ppt-brand/references/layout-library.md` for anatomy.
 - **Typography and contrast:** follow `skills/st-ppt-brand/SKILL.md` (single source).
   Use `text_on(fill)` or let `box()` pick automatically. NEVER white text on gray,

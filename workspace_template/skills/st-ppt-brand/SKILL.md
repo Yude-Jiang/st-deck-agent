@@ -113,6 +113,9 @@ inventing one — they are already brand-compliant. Quick menu (full detail + an
 | Evolution over time (era cards + photo strip) | `timeline-era-cards` |
 | Product launch / campaign Gantt (organic + paid + product lanes) | `timeline-organic-paid-lanes` |
 | MCU activation plan (content assets + promotion lanes) | `timeline-content-promotion-lanes` |
+| Left hero + icon tiles + statement rows + punchline | `left-image-icon-rows` |
+| Migration / readiness timeline with callout circles | `migration-timeline-circles` |
+| Left hero + overlapping message bar + category bullet rows | `left-image-tiered-list` |
 
 **Special slides** (not Title Only): `presentation-title`, `agenda`, `section-title` —
 see `references/special-slides.md`.
@@ -133,10 +136,12 @@ recurring families are in `references/pptx-implementation.md` and `st_brand.py`.
   complete typography spec.
 - `references/special-slides.md` — presentation title, agenda, section title (when to use,
   anatomy, reference images). **Use for deck openers and section breaks.**
-- `references/layout-library.md` — the 13 content-layout archetypes (when to use, anatomy,
+- `references/layout-library.md` — the 16 content-layout archetypes (when to use, anatomy,
   color spec) plus a layout picker. **Read this whenever choosing how to lay out a content slide.**
   Reference images for campaign timelines: `references/timeline-organic-paid-lanes.png`,
   `references/timeline-content-promotion-lanes.png`.
+  PQC-style layouts: `references/left-image-icon-rows.png`,
+  `references/migration-timeline-circles.png`, `references/left-image-tiered-list.png`.
 - `references/layout-rules.md` — layout selection ("Title Only" everywhere except special
   slides), message bar, title area, footer/footnotes, text-box best practices, images.
 - `references/compliance-checklist.md` — do/don't summary + pre-share housecleaning

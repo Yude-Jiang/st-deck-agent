@@ -35,6 +35,9 @@ as shapes.
 | Evolution over time (era cards + photo strip) | `timeline-era-cards` |
 | Product launch / campaign Gantt (organic + paid + product lanes) | `timeline-organic-paid-lanes` |
 | MCU activation plan (content assets + promotion lanes) | `timeline-content-promotion-lanes` |
+| Left hero + icon tiles + statement rows + punchline | `left-image-icon-rows` |
+| Migration / readiness timeline with callout circles | `migration-timeline-circles` |
+| Left hero + overlapping message bar + category bullet rows | `left-image-tiered-list` |
 
 ---
 
@@ -183,6 +186,61 @@ ST Light Blue (campaign duration bars). Avoid magenta/green except the single MM
 **Builder:** prefer `st_brand.add_activation_timeline(...)` or `timeline_template_slide(...)` —
 see `pptx-implementation.md`.
 
+## 14. `left-image-icon-rows` — icon tiles + statement rows
+**Use for:** 3–5 parallel reasons, drivers, or facts each with a pictogram and a one-line
+statement, plus an optional closing punchline (e.g. "Why PQC matters?").
+
+**Reference:** [left-image-icon-rows.png](left-image-icon-rows.png)
+
+**Structure:**
+1. **Left hero image** — full-height panel (~1/3 slide width). ST logo bottom-left on the image.
+   Pass `img_path` for a real ST-owned photo; omit for a gray **placeholder** labelled "Image".
+2. **Title** — top-right on the white band, ST Dark Blue Arial 24–28 pt.
+3. **Rows** (repeat 3–5×) — **ST Yellow** square tile (optional `icon_path` pictogram centred
+   inside) + **Gray 1** `#EEEFF1` bar with one dark-blue sentence (bold key phrases inline).
+4. **Punchline** — large dark-blue statement bottom-right (optional).
+
+**Colors:** ST Dark Blue, Gray 1, ST Yellow accent. No standard message bar on this archetype.
+
+**Builder:** `st_brand.left_image_icon_rows_slide(...)`.
+
+## 15. `migration-timeline-circles` — wave timeline with callouts
+**Use for:** phased migration or readiness roadmaps where each phase is a labelled circle and
+supporting detail sits above or below (e.g. "PQC migration: How much time do you have?").
+
+**Reference:** [migration-timeline-circles.png](migration-timeline-circles.png)
+
+**Structure:**
+1. **Title + subtitle** — top-right, ST Dark Blue.
+2. **Dotted baseline** — horizontal dashed connector across the slide.
+3. **Circles** (3–6) — alternating ST Dark Blue and slate ramp fill; white/yellow label text
+   centred inside each circle.
+4. **Yellow callout ticks** — short vertical ST Yellow bar above or below each circle, with a
+   caption text block (10–11 pt dark blue).
+5. **Logo** — bottom-left.
+
+**Colors:** ST Dark Blue, slate ramp, ST Yellow markers. Distinct from `process-flow-circles`
+(step numbers + arrows) and lane-based timelines (#12–13).
+
+**Builder:** `st_brand.migration_timeline_circles_slide(...)`.
+
+## 16. `left-image-tiered-list` — hero + category bullet rows
+**Use for:** one product/technology with 2–4 grouped capability areas (Software / Hardware /
+Trusted, etc.) and a strong top message (e.g. "Smooth and reliable PQC transition").
+
+**Reference:** [left-image-tiered-list.png](left-image-tiered-list.png)
+
+**Structure:**
+1. **Title** — top-right, ST Dark Blue.
+2. **Navy message bar** — full-width ST Dark Blue band overlapping the top of the left image;
+   white 16–18 pt bold statement inside.
+3. **Left hero image** — ~40% width below the bar; logo bottom-left. `img_path` or gray
+   placeholder.
+4. **Category rows** (2–4) — **ST Yellow** narrow header box (category name) + **Gray 1**
+   bullet box for details, stacked on the right.
+
+**Builder:** `st_brand.left_image_tiered_list_slide(...)`.
+
 ---
 
 ## Applying any of these
@@ -196,4 +254,5 @@ see `pptx-implementation.md`.
 
 Parametrized python-pptx builders for the recurring families (`cards-Nup`,
 `product-comparison-2up`, `process-flow-circles`, `timeline-content-promotion-lanes`,
-`timeline-organic-paid-lanes`) are in `pptx-implementation.md` and `st_brand.py`.
+`timeline-organic-paid-lanes`, `left-image-icon-rows`, `migration-timeline-circles`,
+`left-image-tiered-list`) are in `pptx-implementation.md` and `st_brand.py`.

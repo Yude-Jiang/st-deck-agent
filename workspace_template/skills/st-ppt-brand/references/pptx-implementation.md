@@ -291,6 +291,71 @@ For `timeline-organic-paid-lanes`: place organic boxes above `y_in`, paid span b
 white break lines when the timeline skips months. Build from rectangles, arrows, and
 circles — never SmartArt or external Gantt screenshots.
 
+### `left-image-icon-rows` (covers #14)
+Left hero with optional image or gray placeholder; yellow icon tiles + gray statement rows.
+
+```python
+from st_brand import new_deck, left_image_icon_rows_slide
+
+prs = new_deck()
+left_image_icon_rows_slide(
+    prs,
+    title="Why PQC matters?",
+    rows=[
+        {"text": "Quantum computers threaten today's public-key cryptography.", "icon_path": "icons/key.png"},
+        {"text": "Harvest-now, decrypt-later attacks are already a risk."},
+        {"text": "Longevity commitments require crypto agility now."},
+        {"text": "Regulators and standards bodies are mandating migration."},
+    ],
+    punchline="The transition starts TODAY, before the risk turns real.",
+    img_path=None,           # omit → gray placeholder; or path to ST-owned photo
+    img_placeholder="Image",
+    logo_path="logo_st.png",
+)
+```
+
+### `migration-timeline-circles` (covers #15)
+Alternating navy/slate circles on a dashed baseline with yellow callout ticks.
+
+```python
+from st_brand import migration_timeline_circles_slide
+
+migration_timeline_circles_slide(
+    prs,
+    title="PQC migration",
+    subtitle="How much time do you have?",
+    steps=[
+        {"label": "Awareness", "callout": "Assess exposure", "callout_pos": "above"},
+        {"label": "Hybrid", "callout": "Dual-stack crypto", "callout_pos": "below"},
+        {"label": "Pilot", "callout": "Field trials", "callout_pos": "above"},
+        {"label": "Rollout", "callout": "Product updates", "callout_pos": "below"},
+        {"label": "Full migration", "callout": "Deprecate legacy", "callout_pos": "above"},
+    ],
+)
+```
+
+### `left-image-tiered-list` (covers #16)
+Overlapping navy message bar + left hero + yellow/gray category rows.
+
+```python
+from st_brand import left_image_tiered_list_slide
+
+left_image_tiered_list_slide(
+    prs,
+    title="Smooth and reliable PQC transition",
+    message="We make PQC practical and ready for deployment with ML-KEM and ML-DSA.",
+    categories=[
+        {"title": "Software", "bullets": ["Crypto libraries", "Middleware integration"]},
+        {"title": "Hardware", "bullets": ["Secure elements", "MCU acceleration"]},
+        {"title": "Trusted", "bullets": ["Key provisioning", "Lifecycle management"]},
+    ],
+    img_path="lab_photo.jpg",  # or None for placeholder
+)
+```
+
+Shared helper `_place_image_or_placeholder(slide, image_path, x, y, w, h, label="Image")`
+inserts a real picture when `image_path` is set; otherwise draws a gray box for manual swap.
+
 ## Reminders the code can't enforce — verify by eye
 - **2–3 colors per slide**; large areas use primary colors.
 - **Logo safe zone** kept clear.

@@ -164,6 +164,188 @@ def section_title_slide(prs, title, image_path=None, logo_path=None):
     return slide
 
 
+def _place_image_or_placeholder(slide, image_path, x, y, w, h, label="Image"):
+    """Use a real ST-owned image when available; otherwise leave a gray placeholder."""
+    if image_path:
+        slide.shapes.add_picture(image_path, Inches(x), Inches(y),
+                                 width=Inches(w), height=Inches(h))
+        return None
+    ph = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(x), Inches(y),
+                                Inches(w), Inches(h))
+    fill(ph, GRAY_2)
+    ph.line.color.rgb = GRAY_3
+    ph.line.width = Pt(1)
+    tf = ph.text_frame
+    no_autofit(tf)
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    tf.text = label
+    for p in tf.paragraphs:
+        p.alignment = PP_ALIGN.CENTER
+    _style(tf, ST_DARK_BLUE, 11, bold=False, align=PP_ALIGN.CENTER)
+    return ph
+
+
+def left_image_icon_rows_slide(
+    prs,
+    title,
+    rows,
+    punchline=None,
+    img_path=None,
+    logo_path=None,
+    img_placeholder="Image",
+):
+    """Left hero image + yellow icon tiles + gray statement rows (see layout-library #14)."""
+    slide = title_only_slide(prs)
+    corner_accent(slide)
+    img_w = 4.15
+    _place_image_or_placeholder(slide, img_path, 0, 0, img_w, SLIDE_H, label=img_placeholder)
+    _place_logo(slide, logo_path, 0.45, 6.55, height=0.4)
+    rx = img_w + 0.35
+    rw = SLIDE_W - rx - 0.35
+    tb = slide.shapes.add_textbox(Inches(rx), Inches(0.32), Inches(rw), Inches(0.7))
+    tf = tb.text_frame
+    no_autofit(tf)
+    tf.text = title
+    tf.paragraphs[0].alignment = PP_ALIGN.LEFT
+    _style(tf, ST_DARK_BLUE, 26, bold=True, align=PP_ALIGN.LEFT)
+    row_h = 0.52
+    gap = 0.14
+    y0 = 1.25
+    tile = 0.48
+    for i, row in enumerate(rows):
+        y = y0 + i * (row_h + gap)
+        sq = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(rx), Inches(y),
+                                    Inches(tile), Inches(row_h))
+        fill(sq, ST_YELLOW)
+        icon = row.get("icon_path")
+        if icon:
+            slide.shapes.add_picture(icon, Inches(rx + 0.06), Inches(y + 0.06),
+                                     width=Inches(tile - 0.12), height=Inches(row_h - 0.12))
+        bar_x = rx + tile + 0.12
+        bar_w = rw - tile - 0.12
+        box(slide, bar_x, y, bar_w, row_h, row.get("text", ""), GRAY_1,
+            ST_DARK_BLUE, size=13, bold=False, align=PP_ALIGN.LEFT)
+    if punchline:
+        ptb = slide.shapes.add_textbox(Inches(rx), Inches(5.85), Inches(rw), Inches(1.2))
+        ptf = ptb.text_frame
+        no_autofit(ptf)
+        ptf.word_wrap = True
+        ptf.text = punchline
+        _style(ptf, ST_DARK_BLUE, 22, bold=True, align=PP_ALIGN.LEFT)
+    return slide
+
+
+def left_image_tiered_list_slide(
+    prs,
+    title,
+    message,
+    categories,
+    img_path=None,
+    logo_path=None,
+    img_placeholder="Image",
+):
+    """Left hero + overlapping navy message bar + yellow/gray category rows (layout-library #16)."""
+    slide = title_only_slide(prs)
+    corner_accent(slide)
+    img_w = 5.05
+    img_top = 1.35
+    img_h = 5.95
+    _place_image_or_placeholder(slide, img_path, 0, img_top, img_w, img_h, label=img_placeholder)
+    _place_logo(slide, logo_path, 0.45, 6.55, height=0.38)
+    rx = img_w + 0.25
+    rw = SLIDE_W - rx - 0.35
+    tb = slide.shapes.add_textbox(Inches(rx), Inches(0.28), Inches(rw), Inches(0.65))
+    tf = tb.text_frame
+    no_autofit(tf)
+    tf.text = title
+    tf.paragraphs[0].alignment = PP_ALIGN.LEFT
+    _style(tf, ST_DARK_BLUE, 24, bold=True, align=PP_ALIGN.LEFT)
+    bar = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.35), Inches(0.88),
+                                 Inches(10.2), Inches(0.78))
+    fill(bar, ST_DARK_BLUE)
+    btf = bar.text_frame
+    no_autofit(btf)
+    btf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    btf.margin_left = Inches(0.25)
+    btf.margin_right = Inches(0.25)
+    btf.text = message
+    _style(btf, WHITE, 16, bold=True, align=PP_ALIGN.LEFT)
+    y = 1.45
+    head_w = 1.05
+    gap = 0.12
+    for cat in categories:
+        body_h = max(0.95, 0.28 + 0.22 * len(cat.get("bullets", [])))
+        box(slide, rx, y, head_w, body_h, cat.get("title", ""), ST_YELLOW,
+            ST_DARK_BLUE, size=13, bold=True, align=PP_ALIGN.LEFT)
+        bullet_box(slide, rx + head_w + gap, y, rw - head_w - gap, body_h,
+                   cat.get("bullets", []), shade=GRAY_1, size=12)
+        y += body_h + gap
+    return slide
+
+
+def migration_timeline_circles_slide(
+    prs,
+    title,
+    subtitle=None,
+    steps=None,
+    logo_path=None,
+):
+    """Wave timeline with alternating circles + yellow callout markers (layout-library #15)."""
+    slide = title_only_slide(prs)
+    corner_accent(slide)
+    steps = steps or []
+    tb = slide.shapes.add_textbox(Inches(7.8), Inches(0.28), Inches(5.2), Inches(0.95))
+    tf = tb.text_frame
+    no_autofit(tf)
+    tf.text = title
+    tf.paragraphs[0].alignment = PP_ALIGN.RIGHT
+    _style(tf, ST_DARK_BLUE, 26, bold=True, align=PP_ALIGN.RIGHT)
+    if subtitle:
+        p = tf.add_paragraph()
+        p.text = subtitle
+        p.alignment = PP_ALIGN.RIGHT
+        for r in p.runs:
+            r.font.name = FONT
+            r.font.size = Pt(18)
+            r.font.color.rgb = ST_DARK_BLUE
+    n = len(steps)
+    if not n:
+        return slide
+    d = 1.75
+    x0 = 0.75
+    span = SLIDE_W - 1.5
+    gap = (span - d * n) / (n - 1) if n > 1 else 0
+    cy = 3.55
+    arrow(slide, x0, cy, x0 + span, cy, color=ST_DARK_BLUE, width=1.2, dashed=True)
+    for i, step in enumerate(steps):
+        x = x0 + i * (d + gap)
+        col = ST_DARK_BLUE if i % 2 == 0 else RAMP[2]
+        tc = text_on(col)
+        circ = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(x), Inches(cy - d / 2),
+                                      Inches(d), Inches(d))
+        fill(circ, col)
+        ctf = circ.text_frame
+        no_autofit(ctf)
+        ctf.vertical_anchor = MSO_ANCHOR.MIDDLE
+        ctf.word_wrap = True
+        ctf.text = step.get("label", "")
+        for p in ctf.paragraphs:
+            p.alignment = PP_ALIGN.CENTER
+        _style(ctf, tc, 11, bold=True, align=PP_ALIGN.CENTER)
+        callout = step.get("callout")
+        if callout:
+            above = step.get("callout_pos", "above") != "below"
+            my = cy - d / 2 - 0.55 if above else cy + d / 2 + 0.18
+            dot = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(x + d / 2 - 0.03),
+                                         Inches(my - 0.18 if above else cy + d / 2),
+                                         Inches(0.06), Inches(0.28 if above else 0.22))
+            fill(dot, ST_YELLOW)
+            label(slide, x + d / 2 - 1.35, my - 0.15 if above else my,
+                  2.7, callout, size=10, bold=False, align=PP_ALIGN.CENTER)
+    _place_logo(slide, logo_path, 0.45, 6.55, height=0.38)
+    return slide
+
+
 def fill(shape, color):
     shape.fill.solid()
     shape.fill.fore_color.rgb = color
