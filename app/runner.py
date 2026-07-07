@@ -42,7 +42,7 @@ def _lang_instruction(lang: str) -> str:
 
 _COMMON = """Build EXACTLY {pages} slide(s). Follow skills/st-ppt-brand/SKILL.md for \
 palette, typography, contrast, and layout. Prefer st_brand.py helpers \
-(text_on, closing_slide for external decks). Never use AI images. {uploads}{language} \
+(text_on, closing_slide for external decks). Never use AI images. {page_hint}{uploads}{language} \
 When you build: save build.py, write output/deck_meta.json with \
 {{"subject":"<deck title>","filename":"<Subject-Line-YYYY-MM-DD>.pptx"}}, run \
 `python tools/preview.py output/deck.pptx output`, OPEN every preview PNG, fix \
@@ -112,11 +112,27 @@ def _uploads_note(has_uploads: bool) -> str:
     )
 
 
+def _page_count_hint(pages: int) -> str:
+    if pages != 1:
+        return ""
+    return (
+        "SINGLE-SLIDE DECK (1 page only): deliver ONE executive-summary slide — not a "
+        "mini-deck squeezed onto one page. The 20pt message bar must state the single "
+        "takeaway. Do NOT use 3-up cards-Nup to cram \"what / why / how\" — that is a "
+        "3-slide story and will look overcrowded. Prefer: (a) title + message bar + ONE "
+        "gray bullet box (4–5 bullets max, ~60 words total body), (b) "
+        "left_image_icon_rows_slide with 3–4 one-line rows + optional punchline, or "
+        "(c) left-image-feature-boxes with at most 2 blocks. If the topic has many "
+        "angles, pick the ONE most useful for a quick intro — do not list every facet. "
+    )
+
+
 def _common(pages: int, has_uploads: bool, language: str) -> str:
     pages = max(1, min(config.MAX_PAGES, int(pages or 1)))
     lang_block = _lang_instruction(language) + " "
     return _COMMON.format(
         pages=pages,
+        page_hint=_page_count_hint(pages),
         uploads=_uploads_note(has_uploads),
         language=lang_block,
     )

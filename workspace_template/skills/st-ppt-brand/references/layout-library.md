@@ -22,6 +22,7 @@ as shapes.
 ## How to choose
 | If the content is… | Use archetype |
 |---|---|
+| **Exactly 1 slide** (executive summary / quick intro) | See **Single-slide** below — avoid 3-up cards |
 | One use-case told over a hero photo | `app-photo-overlay` |
 | One product/tech with 2–3 grouped feature blocks + a hero image | `left-image-feature-boxes` |
 | Two products/options compared head-to-head | `product-comparison-2up` |
@@ -38,6 +39,20 @@ as shapes.
 | Left hero + icon tiles + statement rows + punchline | `left-image-icon-rows` |
 | Migration / readiness timeline with callout circles | `migration-timeline-circles` |
 | Left hero + overlapping message bar + category bullet rows | `left-image-tiered-list` |
+
+### Single-slide (N = 1) — executive summary
+When the deck is **one page only**, treat it as a single takeaway — not a multi-topic
+deck compressed onto one canvas.
+
+| Goal | Layout | Limits |
+|---|---|---|
+| Quick topic intro | title + message bar + one gray bullet box | 4–5 bullets, ~60 words body |
+| Story with visual hook | `left-image-icon-rows` | 3–4 one-line rows + optional punchline |
+| Product / tech spotlight | `left-image-feature-boxes` | ≤ 2 feature blocks |
+| One application narrative | `app-photo-overlay` | 4–6 bullets max |
+
+**Avoid** `cards-Nup` with 3+ columns for 1-slide intros — each column wants its own
+slide. If the brief spans "what / why / how", pick one angle or ask for more pages.
 
 ---
 

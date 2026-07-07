@@ -91,6 +91,10 @@ paired with strong visuals improves retention ("less is more"). Use the title to
 the slide; use the message bar for the one thing the audience should remember.
 
 ## Choosing a content layout
+**Single-slide decks (N = 1):** one executive-summary slide — one message bar takeaway,
+4–5 bullets max. Do not use 3-up `cards-Nup` to cram multiple topics; see
+`references/layout-library.md` § Single-slide.
+
 For **special slides** (presentation title, agenda, section title, closing), use the dedicated
 templates in `references/special-slides.md` and `st_brand.py` builders — not Title Only.
 

@@ -20,6 +20,22 @@ Always:
   image(s) exist.
 - Default slide language is set in `language.txt` for each session (zh / en / ja).
 
+### Single-slide decks (pages = 1)
+A **1-page request is one executive-summary slide**, not permission to cram a full
+deck onto one canvas.
+
+- **One takeaway** — the 20pt message bar states what the audience should remember.
+- **Do NOT** use 3-up `cards-Nup` to pack "definition + why + how-to" into narrow
+  columns; that reads as three slides squashed together and overflows visually.
+- **Prefer** (pick one):
+  - Title + message bar + **one** gray bullet box (4–5 bullets max, ~60 words body).
+  - `left_image_icon_rows_slide` — 3–4 **one-line** statement rows + optional punchline.
+  - `left-image-feature-boxes` — hero image + **at most 2** feature blocks.
+- If the brief is broad (e.g. "introduce GEO"), choose **one angle** (e.g. "what it
+  is and why ST should care") rather than covering every facet.
+- Self-check: zoom the preview — if any column feels cramped or bullets wrap heavily,
+  cut content or switch layout.
+
 Follow this loop exactly (it mirrors a careful designer):
 
 ## 1. Understand & gather
