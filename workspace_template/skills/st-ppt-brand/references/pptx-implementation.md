@@ -23,6 +23,11 @@ GRAY_1       = RGBColor(0xEE, 0xEF, 0xF1)   # lightest
 GRAY_2       = RGBColor(0xDB, 0xDE, 0xE1)
 GRAY_3       = RGBColor(0xC0, 0xC8, 0xD2)   # medium blue-gray
 
+# Typography — import from st_brand.py (sampled from Presentation template.potx):
+# TITLE_SIZE=36, TITLE_BOLD=False, MSG_BAR_SIZE=20, BODY_SIZE=14, CAPTION_SIZE=13,
+# BODY_L1_SIZE=24, AGENDA_TOPIC_SIZE=28, LABEL_SIZE=11, FOOTNOTE_SIZE=8
+# Always use these constants; never hard-code Pt() in build scripts.
+
 # Dark-blue shading ramp (graded headers / process circles). Darkest first.
 RAMP = [RGBColor(0x03,0x23,0x4B),   # 1 ST Dark Blue
         RGBColor(0x42,0x59,0x78),   # 2 slate = "first shade of dark blue"
@@ -32,17 +37,6 @@ def ramp_text(step):  # white on dark steps, dark blue on light steps
     return WHITE if step < 2 else ST_DARK_BLUE
 
 FONT = "Arial"
-FONT_DIAGRAM = "Arial Narrow"  # block-diagram labels only
-
-# Typography from Presentation template.potx (slideMaster txStyles)
-TITLE_SIZE = 36; TITLE_BOLD = False
-MSG_BAR_SIZE = 20; BODY_SIZE = 14
-BODY_L1_SIZE = 24; BODY_L2_SIZE = 20; BODY_L3_SIZE = 18; BODY_L4_SIZE = 16
-CAPTION_SIZE = 13; HEADING_SIZE = 17; SUBTITLE_SIZE = 18; SUB_SIZE = 12
-LABEL_SIZE = 11; FOOTNOTE_SIZE = 8
-AGENDA_TOPIC_SIZE = 28
-PRESENTATION_TITLE_SIZE = 36; SECTION_TITLE_SIZE = 36
-CLOSING_TAGLINE_SIZE = 32
 
 def fill(shape, color):
     shape.fill.solid(); shape.fill.fore_color.rgb = color
@@ -59,28 +53,6 @@ def style_runs(tf, color, size_pt, bold=False, font=FONT):
             r.font.name = font; r.font.size = Pt(size_pt)
             r.font.bold = bold; r.font.color.rgb = color
 ```
-
-## Typography (master txStyles)
-Values from **Presentation template.potx** (`slideMaster` `txStyles`). Import the named
-constants from `st_brand.py` — do not hard-code ad-hoc sizes in build scripts.
-
-| Element | Size | Notes |
-|---|---|---|
-| Content slide title | **36 pt** | Arial, regular (`TITLE_SIZE`, `TITLE_BOLD=False`) |
-| Presentation / section title | **36 pt** | Bold on special slides (`PRESENTATION_TITLE_SIZE`, `SECTION_TITLE_SIZE`) |
-| Agenda topic + number | **28 pt** | Yellow tile + topic text (`AGENDA_TOPIC_SIZE`) |
-| Key message bar | **20 pt Arial bold** | `MSG_BAR_SIZE` — no exceptions |
-| Body / bullets in boxes | **14 pt** | `BODY_SIZE` |
-| Dense row / card body | **13 pt** | `CAPTION_SIZE` |
-| Card / column header | **17 pt** | `HEADING_SIZE` |
-| Punchline / emphasis | **24 pt** | `BODY_L1_SIZE` |
-| Subtitle / presenter | **18 pt** | `SUBTITLE_SIZE` |
-| Footer / axis label | **11 pt** | `LABEL_SIZE` |
-| Closing tagline | **32 pt** | `CLOSING_TAGLINE_SIZE` |
-| Legal footnote (closing) | **8 pt** | `FOOTNOTE_SIZE` |
-
-Body placeholder levels (reference): L1 **24 pt**, L2 **20 pt**, L3 **18 pt**,
-L4–L5 **16 pt** (`BODY_L1_SIZE` … `BODY_L4_SIZE`).
 
 ## 16:9 deck
 ```python
@@ -105,7 +77,7 @@ def add_message_bar(slide, text, fill_color=ST_LIGHT_BLUE):
     tf.text = text
     # contrast: dark-blue text on yellow/light-blue, white on dark blue
     txt = WHITE if fill_color == ST_DARK_BLUE else ST_DARK_BLUE
-    style_runs(tf, txt, MSG_BAR_SIZE, bold=True)   # 20 pt Arial, no exceptions
+    style_runs(tf, txt, 20, bold=True)   # 20 pt Arial, no exceptions
     return bar
 ```
 
@@ -117,7 +89,7 @@ def add_content_slide(prs, title):
     slide = prs.slides.add_slide(prs.slide_layouts[5])
     t = slide.shapes.title
     t.text = title
-    style_runs(t.text_frame, ST_DARK_BLUE, TITLE_SIZE, bold=TITLE_BOLD)
+    style_runs(t.text_frame, ST_DARK_BLUE, 36, bold=False)
     return slide
 ```
 
@@ -131,7 +103,7 @@ def add_shaded_box(slide, x, y, w, h, lines, shade=GRAY_1, heading=None):
     tf.margin_top = Inches(0.15)
     if heading:
         tf.text = heading
-        style_runs(tf, ST_DARK_BLUE, BODY_SIZE, bold=True)
+        style_runs(tf, ST_DARK_BLUE, 14, bold=True)
         first = False
     else:
         first = True
@@ -140,7 +112,7 @@ def add_shaded_box(slide, x, y, w, h, lines, shade=GRAY_1, heading=None):
         first = False
         p.text = "• " + ln
         for r in p.runs:
-            r.font.name = FONT; r.font.size = Pt(BODY_SIZE); r.font.color.rgb = ST_DARK_BLUE
+            r.font.name = FONT; r.font.size = Pt(14); r.font.color.rgb = ST_DARK_BLUE
     return box
 ```
 
@@ -153,7 +125,7 @@ def add_section_slide(prs, title):
                                  Inches(2.2), Inches(0.9), Inches(9.0), Inches(1.2))
     fill(bar, ST_YELLOW); tf = bar.text_frame; no_autofit(tf); tf.vertical_anchor = MSO_ANCHOR.MIDDLE
     tf.margin_left = Inches(0.4); tf.text = title
-    style_runs(tf, ST_DARK_BLUE, SECTION_TITLE_SIZE, bold=True)
+    style_runs(tf, ST_DARK_BLUE, 32, bold=True)
     return slide
 ```
 **Deprecated** — use `section_title_slide` in `st_brand.py` (top yellow bar per template).
