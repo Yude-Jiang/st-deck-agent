@@ -36,10 +36,13 @@ FONT_DIAGRAM = "Arial Narrow"  # block-diagram labels only
 
 # Typography from Presentation template.potx (slideMaster txStyles)
 TITLE_SIZE = 36; TITLE_BOLD = False
-MSG_BAR_SIZE = 20; BODY_SIZE = 14; BODY_L1_SIZE = 24
-BODY_L3_SIZE = 18; CAPTION_SIZE = 13; LABEL_SIZE = 11
-AGENDA_TOPIC_SIZE = 28; SECTION_TITLE_SIZE = 36
-PRESENTATION_TITLE_SIZE = 36; FOOTNOTE_SIZE = 8
+MSG_BAR_SIZE = 20; BODY_SIZE = 14
+BODY_L1_SIZE = 24; BODY_L2_SIZE = 20; BODY_L3_SIZE = 18; BODY_L4_SIZE = 16
+CAPTION_SIZE = 13; HEADING_SIZE = 17; SUBTITLE_SIZE = 18; SUB_SIZE = 12
+LABEL_SIZE = 11; FOOTNOTE_SIZE = 8
+AGENDA_TOPIC_SIZE = 28
+PRESENTATION_TITLE_SIZE = 36; SECTION_TITLE_SIZE = 36
+CLOSING_TAGLINE_SIZE = 32
 
 def fill(shape, color):
     shape.fill.solid(); shape.fill.fore_color.rgb = color
@@ -56,6 +59,28 @@ def style_runs(tf, color, size_pt, bold=False, font=FONT):
             r.font.name = font; r.font.size = Pt(size_pt)
             r.font.bold = bold; r.font.color.rgb = color
 ```
+
+## Typography (master txStyles)
+Values from **Presentation template.potx** (`slideMaster` `txStyles`). Import the named
+constants from `st_brand.py` — do not hard-code ad-hoc sizes in build scripts.
+
+| Element | Size | Notes |
+|---|---|---|
+| Content slide title | **36 pt** | Arial, regular (`TITLE_SIZE`, `TITLE_BOLD=False`) |
+| Presentation / section title | **36 pt** | Bold on special slides (`PRESENTATION_TITLE_SIZE`, `SECTION_TITLE_SIZE`) |
+| Agenda topic + number | **28 pt** | Yellow tile + topic text (`AGENDA_TOPIC_SIZE`) |
+| Key message bar | **20 pt Arial bold** | `MSG_BAR_SIZE` — no exceptions |
+| Body / bullets in boxes | **14 pt** | `BODY_SIZE` |
+| Dense row / card body | **13 pt** | `CAPTION_SIZE` |
+| Card / column header | **17 pt** | `HEADING_SIZE` |
+| Punchline / emphasis | **24 pt** | `BODY_L1_SIZE` |
+| Subtitle / presenter | **18 pt** | `SUBTITLE_SIZE` |
+| Footer / axis label | **11 pt** | `LABEL_SIZE` |
+| Closing tagline | **32 pt** | `CLOSING_TAGLINE_SIZE` |
+| Legal footnote (closing) | **8 pt** | `FOOTNOTE_SIZE` |
+
+Body placeholder levels (reference): L1 **24 pt**, L2 **20 pt**, L3 **18 pt**,
+L4–L5 **16 pt** (`BODY_L1_SIZE` … `BODY_L4_SIZE`).
 
 ## 16:9 deck
 ```python

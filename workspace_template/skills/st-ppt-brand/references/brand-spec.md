@@ -67,24 +67,27 @@ slide styling. Don't introduce them unless the user explicitly asks.
 - Special title slides (Main title, Section title, Thank you) may carry the template's
   built-in display typeface — preserve it; do not swap it for Arial or anything else.
 
-### Size scale (from Presentation template.potx slideMaster txStyles)
-Values are mirrored in `st_brand.py` constants. Layout positions and box geometry are
-unchanged — only type sizes were aligned to the master.
+### Size scale
+Values from **Presentation template.potx** (slideMaster `txStyles`). Use the named
+constants in `st_brand.py` — do not hard-code ad-hoc sizes in build scripts.
 
-| Element | Size | Weight | Notes |
-|---|---|---|---|
-| Content slide title | **36 pt** | regular | `TITLE_SIZE`, `TITLE_BOLD=False` |
-| Key message bar | **20 pt** | bold | `MSG_BAR_SIZE` — no exceptions |
-| Body / bullets | **14 pt** | regular | `BODY_SIZE` (12 pt min, 20 pt max) |
-| Punchline / L1 emphasis | **24 pt** | bold | `BODY_L1_SIZE` |
-| Subtitle / L3 | **18 pt** | regular | `SUBTITLE_SIZE`, `BODY_L3_SIZE` |
-| Card / row caption | **13 pt** | varies | `CAPTION_SIZE` |
-| Agenda number + topic | **28 pt** | number bold | `AGENDA_TOPIC_SIZE` |
-| Section title (yellow bar) | **36 pt** | bold | `SECTION_TITLE_SIZE` |
-| Presentation title | **36 pt** | bold | `PRESENTATION_TITLE_SIZE` |
-| Closing tagline | **32 pt** | bold | `CLOSING_TAGLINE_SIZE` |
-| Footer / axis labels | **11 pt** | varies | `LABEL_SIZE` |
-| Closing legal footnote | **8 pt** | regular | `FOOTNOTE_SIZE` |
+| Element | Size | Notes |
+|---|---|---|
+| Content slide title | **36 pt** | Arial, regular weight (`TITLE_SIZE`, `TITLE_BOLD=False`) |
+| Presentation / section title | **36 pt** | Bold on special slides (`PRESENTATION_TITLE_SIZE`, `SECTION_TITLE_SIZE`) |
+| Agenda topic + number | **28 pt** | Yellow tile + topic text (`AGENDA_TOPIC_SIZE`) |
+| Key message bar | **20 pt Arial bold** | `MSG_BAR_SIZE` — no exceptions |
+| Body / bullets in boxes | **14 pt** | `BODY_SIZE` |
+| Dense row / card body | **13 pt** | `CAPTION_SIZE` (template content examples) |
+| Card / column header | **17 pt** | `HEADING_SIZE` |
+| Punchline / emphasis | **24 pt** | `BODY_L1_SIZE` |
+| Subtitle / presenter | **18 pt** | `SUBTITLE_SIZE` |
+| Footer / axis label | **11 pt** | `LABEL_SIZE` |
+| Closing tagline | **32 pt** | `CLOSING_TAGLINE_SIZE` |
+| Legal footnote (closing) | **8 pt** | `FOOTNOTE_SIZE` |
+
+Body placeholder levels in the master (for reference): L1 **24 pt**, L2 **20 pt**,
+L3 **18 pt**, L4–L5 **16 pt** (`BODY_L1_SIZE` … `BODY_L4_SIZE`).
 
 ### Color of type
 - Body text: ST Dark Blue on light backgrounds; white on dark backgrounds.
