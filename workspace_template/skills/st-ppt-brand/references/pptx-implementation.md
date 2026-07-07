@@ -32,6 +32,14 @@ def ramp_text(step):  # white on dark steps, dark blue on light steps
     return WHITE if step < 2 else ST_DARK_BLUE
 
 FONT = "Arial"
+FONT_DIAGRAM = "Arial Narrow"  # block-diagram labels only
+
+# Typography from Presentation template.potx (slideMaster txStyles)
+TITLE_SIZE = 36; TITLE_BOLD = False
+MSG_BAR_SIZE = 20; BODY_SIZE = 14; BODY_L1_SIZE = 24
+BODY_L3_SIZE = 18; CAPTION_SIZE = 13; LABEL_SIZE = 11
+AGENDA_TOPIC_SIZE = 28; SECTION_TITLE_SIZE = 36
+PRESENTATION_TITLE_SIZE = 36; FOOTNOTE_SIZE = 8
 
 def fill(shape, color):
     shape.fill.solid(); shape.fill.fore_color.rgb = color
@@ -72,7 +80,7 @@ def add_message_bar(slide, text, fill_color=ST_LIGHT_BLUE):
     tf.text = text
     # contrast: dark-blue text on yellow/light-blue, white on dark blue
     txt = WHITE if fill_color == ST_DARK_BLUE else ST_DARK_BLUE
-    style_runs(tf, txt, 20, bold=True)   # 20 pt Arial, no exceptions
+    style_runs(tf, txt, MSG_BAR_SIZE, bold=True)   # 20 pt Arial, no exceptions
     return bar
 ```
 
@@ -84,7 +92,7 @@ def add_content_slide(prs, title):
     slide = prs.slides.add_slide(prs.slide_layouts[5])
     t = slide.shapes.title
     t.text = title
-    style_runs(t.text_frame, ST_DARK_BLUE, 36, bold=False)
+    style_runs(t.text_frame, ST_DARK_BLUE, TITLE_SIZE, bold=TITLE_BOLD)
     return slide
 ```
 
@@ -98,7 +106,7 @@ def add_shaded_box(slide, x, y, w, h, lines, shade=GRAY_1, heading=None):
     tf.margin_top = Inches(0.15)
     if heading:
         tf.text = heading
-        style_runs(tf, ST_DARK_BLUE, 14, bold=True)
+        style_runs(tf, ST_DARK_BLUE, BODY_SIZE, bold=True)
         first = False
     else:
         first = True
@@ -107,7 +115,7 @@ def add_shaded_box(slide, x, y, w, h, lines, shade=GRAY_1, heading=None):
         first = False
         p.text = "• " + ln
         for r in p.runs:
-            r.font.name = FONT; r.font.size = Pt(14); r.font.color.rgb = ST_DARK_BLUE
+            r.font.name = FONT; r.font.size = Pt(BODY_SIZE); r.font.color.rgb = ST_DARK_BLUE
     return box
 ```
 
@@ -120,7 +128,7 @@ def add_section_slide(prs, title):
                                  Inches(2.2), Inches(0.9), Inches(9.0), Inches(1.2))
     fill(bar, ST_YELLOW); tf = bar.text_frame; no_autofit(tf); tf.vertical_anchor = MSO_ANCHOR.MIDDLE
     tf.margin_left = Inches(0.4); tf.text = title
-    style_runs(tf, ST_DARK_BLUE, 32, bold=True)
+    style_runs(tf, ST_DARK_BLUE, SECTION_TITLE_SIZE, bold=True)
     return slide
 ```
 **Deprecated** — use `section_title_slide` in `st_brand.py` (top yellow bar per template).

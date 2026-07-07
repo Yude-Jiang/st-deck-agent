@@ -25,8 +25,30 @@ SLATE         = RGBColor(0x42, 0x59, 0x78)   # first shade of dark blue
 RAMP = [ST_DARK_BLUE, SLATE, RGBColor(0x80, 0x91, 0xA5), RGBColor(0xC0, 0xC9, 0xCE)]
 
 FONT = "Arial"
+FONT_DIAGRAM = "Arial Narrow"  # block-diagram labels only (brand spec)
 SLIDE_W = 13.333
 SLIDE_H = 7.5
+
+# Typography sampled from Presentation template.potx (slideMaster txStyles + layouts).
+# sz values in OOXML are hundredths of a point (3600 = 36 pt).
+TITLE_SIZE = 36           # content slide title (titleStyle lvl1, regular)
+TITLE_BOLD = False
+MSG_BAR_SIZE = 20         # key message bar (bodyStyle lvl2)
+BODY_SIZE = 14            # box / bullet body (template content examples)
+BODY_L1_SIZE = 24         # first-level emphasis / punchline
+BODY_L2_SIZE = 20
+BODY_L3_SIZE = 18         # subtitles, secondary headings
+BODY_L4_SIZE = 16
+CAPTION_SIZE = 13         # dense card / row text (template slide examples)
+HEADING_SIZE = 17         # card / column headers in multi-box layouts
+SUBTITLE_SIZE = 18
+LABEL_SIZE = 11           # footer, slide number, axis labels
+FOOTNOTE_SIZE = 8         # closing legal text
+AGENDA_TOPIC_SIZE = 28    # Agenda layout numbered tiles + topics
+PRESENTATION_TITLE_SIZE = 36
+SECTION_TITLE_SIZE = 36
+CLOSING_TAGLINE_SIZE = 32
+SUB_SIZE = 12             # secondary line under a box header
 
 
 # Dark fills: white text. Light fills: ST Dark Blue text.
@@ -43,11 +65,6 @@ def text_on(fill_color):
     if fill_color in _DARK_FILLS:
         return WHITE
     return ST_DARK_BLUE
-
-
-BODY_SIZE = 14   # prefer 14 pt per brand spec (12 min, 20 max)
-TITLE_SIZE = 27
-MSG_BAR_SIZE = 20
 
 
 def new_deck():
@@ -85,13 +102,13 @@ def presentation_title_slide(prs, title, presenter=None, logo_path=None):
     tf = tb.text_frame
     no_autofit(tf)
     tf.text = title
-    _style(tf, WHITE, 36, bold=True, align=PP_ALIGN.LEFT)
+    _style(tf, WHITE, PRESENTATION_TITLE_SIZE, bold=True, align=PP_ALIGN.LEFT)
     if presenter:
         ptb = slide.shapes.add_textbox(Inches(1.1), Inches(3.85), Inches(8.0), Inches(0.55))
         ptf = ptb.text_frame
         no_autofit(ptf)
         ptf.text = presenter
-        _style(ptf, WHITE, 18, bold=False, align=PP_ALIGN.LEFT)
+        _style(ptf, WHITE, SUBTITLE_SIZE, bold=False, align=PP_ALIGN.LEFT)
     _place_logo(slide, logo_path, 11.35, 0.38, height=0.5)
     return slide
 
@@ -105,7 +122,7 @@ def agenda_slide(prs, topics, title="Agenda", logo_path=None, columns=2):
     no_autofit(tf)
     tf.text = title
     tf.paragraphs[0].alignment = PP_ALIGN.RIGHT
-    _style(tf, ST_DARK_BLUE, 32, bold=True, align=PP_ALIGN.RIGHT)
+    _style(tf, ST_DARK_BLUE, TITLE_SIZE, bold=TITLE_BOLD, align=PP_ALIGN.RIGHT)
     n = len(topics)
     cols = max(1, min(columns, 2))
     rows = (n + cols - 1) // cols
@@ -129,14 +146,14 @@ def agenda_slide(prs, topics, title="Agenda", logo_path=None, columns=2):
         stf.text = str(i + 1)
         for p in stf.paragraphs:
             p.alignment = PP_ALIGN.CENTER
-        _style(stf, ST_DARK_BLUE, 14, bold=True, align=PP_ALIGN.CENTER)
+        _style(stf, ST_DARK_BLUE, AGENDA_TOPIC_SIZE, bold=True, align=PP_ALIGN.CENTER)
         label = slide.shapes.add_textbox(Inches(x + tile + 0.18), Inches(y + 0.06),
                                          Inches(4.8), Inches(0.38))
         ltf = label.text_frame
         no_autofit(ltf)
         ltf.vertical_anchor = MSO_ANCHOR.MIDDLE
         ltf.text = topic
-        _style(ltf, ST_DARK_BLUE, 14, bold=False, align=PP_ALIGN.LEFT)
+        _style(ltf, ST_DARK_BLUE, AGENDA_TOPIC_SIZE, bold=False, align=PP_ALIGN.LEFT)
     _place_logo(slide, logo_path, 0.45, 6.55, height=0.42)
     return slide
 
@@ -153,7 +170,7 @@ def section_title_slide(prs, title, image_path=None, logo_path=None):
     tf.vertical_anchor = MSO_ANCHOR.MIDDLE
     tf.margin_left = Inches(0.35)
     tf.text = title
-    _style(tf, ST_DARK_BLUE, 30, bold=True, align=PP_ALIGN.LEFT)
+    _style(tf, ST_DARK_BLUE, SECTION_TITLE_SIZE, bold=True, align=PP_ALIGN.LEFT)
     if image_path:
         slide.shapes.add_picture(image_path, Inches(2.2), Inches(1.65),
                                  width=Inches(8.9), height=Inches(4.35))
@@ -181,7 +198,7 @@ def _place_image_or_placeholder(slide, image_path, x, y, w, h, label="Image"):
     tf.text = label
     for p in tf.paragraphs:
         p.alignment = PP_ALIGN.CENTER
-    _style(tf, ST_DARK_BLUE, 11, bold=False, align=PP_ALIGN.CENTER)
+    _style(tf, ST_DARK_BLUE, LABEL_SIZE, bold=False, align=PP_ALIGN.CENTER)
     return ph
 
 
@@ -207,7 +224,7 @@ def left_image_icon_rows_slide(
     no_autofit(tf)
     tf.text = title
     tf.paragraphs[0].alignment = PP_ALIGN.LEFT
-    _style(tf, ST_DARK_BLUE, 26, bold=True, align=PP_ALIGN.LEFT)
+    _style(tf, ST_DARK_BLUE, TITLE_SIZE, bold=TITLE_BOLD, align=PP_ALIGN.LEFT)
     row_h = 0.52
     gap = 0.14
     y0 = 1.25
@@ -224,14 +241,14 @@ def left_image_icon_rows_slide(
         bar_x = rx + tile + 0.12
         bar_w = rw - tile - 0.12
         box(slide, bar_x, y, bar_w, row_h, row.get("text", ""), GRAY_1,
-            ST_DARK_BLUE, size=13, bold=False, align=PP_ALIGN.LEFT)
+            ST_DARK_BLUE, size=CAPTION_SIZE, bold=False, align=PP_ALIGN.LEFT)
     if punchline:
         ptb = slide.shapes.add_textbox(Inches(rx), Inches(5.85), Inches(rw), Inches(1.2))
         ptf = ptb.text_frame
         no_autofit(ptf)
         ptf.word_wrap = True
         ptf.text = punchline
-        _style(ptf, ST_DARK_BLUE, 22, bold=True, align=PP_ALIGN.LEFT)
+        _style(ptf, ST_DARK_BLUE, BODY_L1_SIZE, bold=True, align=PP_ALIGN.LEFT)
     return slide
 
 
@@ -259,7 +276,7 @@ def left_image_tiered_list_slide(
     no_autofit(tf)
     tf.text = title
     tf.paragraphs[0].alignment = PP_ALIGN.LEFT
-    _style(tf, ST_DARK_BLUE, 24, bold=True, align=PP_ALIGN.LEFT)
+    _style(tf, ST_DARK_BLUE, TITLE_SIZE, bold=TITLE_BOLD, align=PP_ALIGN.LEFT)
     bar = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.35), Inches(0.88),
                                  Inches(10.2), Inches(0.78))
     fill(bar, ST_DARK_BLUE)
@@ -269,16 +286,16 @@ def left_image_tiered_list_slide(
     btf.margin_left = Inches(0.25)
     btf.margin_right = Inches(0.25)
     btf.text = message
-    _style(btf, WHITE, 16, bold=True, align=PP_ALIGN.LEFT)
+    _style(btf, WHITE, MSG_BAR_SIZE, bold=True, align=PP_ALIGN.LEFT)
     y = 1.45
     head_w = 1.05
     gap = 0.12
     for cat in categories:
         body_h = max(0.95, 0.28 + 0.22 * len(cat.get("bullets", [])))
         box(slide, rx, y, head_w, body_h, cat.get("title", ""), ST_YELLOW,
-            ST_DARK_BLUE, size=13, bold=True, align=PP_ALIGN.LEFT)
+            ST_DARK_BLUE, size=CAPTION_SIZE, bold=True, align=PP_ALIGN.LEFT)
         bullet_box(slide, rx + head_w + gap, y, rw - head_w - gap, body_h,
-                   cat.get("bullets", []), shade=GRAY_1, size=12)
+                   cat.get("bullets", []), shade=GRAY_1, size=BODY_SIZE)
         y += body_h + gap
     return slide
 
@@ -299,14 +316,14 @@ def migration_timeline_circles_slide(
     no_autofit(tf)
     tf.text = title
     tf.paragraphs[0].alignment = PP_ALIGN.RIGHT
-    _style(tf, ST_DARK_BLUE, 26, bold=True, align=PP_ALIGN.RIGHT)
+    _style(tf, ST_DARK_BLUE, TITLE_SIZE, bold=TITLE_BOLD, align=PP_ALIGN.RIGHT)
     if subtitle:
         p = tf.add_paragraph()
         p.text = subtitle
         p.alignment = PP_ALIGN.RIGHT
         for r in p.runs:
             r.font.name = FONT
-            r.font.size = Pt(18)
+            r.font.size = Pt(BODY_L3_SIZE)
             r.font.color.rgb = ST_DARK_BLUE
     n = len(steps)
     if not n:
@@ -331,7 +348,7 @@ def migration_timeline_circles_slide(
         ctf.text = step.get("label", "")
         for p in ctf.paragraphs:
             p.alignment = PP_ALIGN.CENTER
-        _style(ctf, tc, 11, bold=True, align=PP_ALIGN.CENTER)
+        _style(ctf, tc, CAPTION_SIZE, bold=True, align=PP_ALIGN.CENTER)
         callout = step.get("callout")
         if callout:
             above = step.get("callout_pos", "above") != "below"
@@ -341,7 +358,7 @@ def migration_timeline_circles_slide(
                                          Inches(0.06), Inches(0.28 if above else 0.22))
             fill(dot, ST_YELLOW)
             label(slide, x + d / 2 - 1.35, my - 0.15 if above else my,
-                  2.7, callout, size=10, bold=False, align=PP_ALIGN.CENTER)
+                  2.7, callout, size=LABEL_SIZE, bold=False, align=PP_ALIGN.CENTER)
     _place_logo(slide, logo_path, 0.45, 6.55, height=0.38)
     return slide
 
@@ -376,20 +393,24 @@ def corner_accent(slide):
     return a
 
 
-def add_title(slide, text, subtitle=None, align=PP_ALIGN.RIGHT, size=27):
+def add_title(slide, text, subtitle=None, align=PP_ALIGN.RIGHT, size=None, bold=None):
+    if size is None:
+        size = TITLE_SIZE
+    if bold is None:
+        bold = TITLE_BOLD
     tb = slide.shapes.add_textbox(Inches(1.0), Inches(0.28), Inches(12.1), Inches(0.95))
     tf = tb.text_frame
     no_autofit(tf)
     tf.text = text
     tf.paragraphs[0].alignment = align
-    _style(tf, ST_DARK_BLUE, size, bold=True)
+    _style(tf, ST_DARK_BLUE, size, bold=bold)
     if subtitle:
         p = tf.add_paragraph()
         p.text = subtitle
         p.alignment = align
         for r in p.runs:
             r.font.name = FONT
-            r.font.size = Pt(13)
+            r.font.size = Pt(SUBTITLE_SIZE)
             r.font.color.rgb = ST_LIGHT_BLUE
     return tb
 
@@ -412,7 +433,7 @@ def add_message_bar(slide, text, fill_color=ST_LIGHT_BLUE):
 
 
 def box(slide, x, y, w, h, text, fill_color, text_color=None, size=BODY_SIZE, bold=True,
-        align=PP_ALIGN.CENTER, sub=None, sub_size=12):
+        align=PP_ALIGN.CENTER, sub=None, sub_size=SUB_SIZE):
     """A rectangle with embedded text. text_color defaults to text_on(fill)."""
     if text_color is None:
         text_color = text_on(fill_color)
@@ -461,7 +482,7 @@ def bullet_box(slide, x, y, w, h, bullets, shade=GRAY_1, size=BODY_SIZE, heading
         tf.paragraphs[0].alignment = PP_ALIGN.LEFT
         for r in tf.paragraphs[0].runs:
             r.font.name = FONT
-            r.font.size = Pt(size + 2)
+            r.font.size = Pt(size + (BODY_L4_SIZE - BODY_SIZE))
             r.font.bold = True
             r.font.color.rgb = ST_DARK_BLUE
         first = False
@@ -478,7 +499,7 @@ def bullet_box(slide, x, y, w, h, bullets, shade=GRAY_1, size=BODY_SIZE, heading
     return sh
 
 
-def label(slide, x, y, w, text, color=ST_DARK_BLUE, size=11, bold=True,
+def label(slide, x, y, w, text, color=ST_DARK_BLUE, size=LABEL_SIZE, bold=True,
           align=PP_ALIGN.LEFT):
     tb = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(0.3))
     tf = tb.text_frame
@@ -542,8 +563,8 @@ def add_activation_timeline(
     arrow(slide, x0, y_line, x1, y_line, color=ST_DARK_BLUE, width=2.2)
 
     # Lane labels
-    box(slide, 0.0, y_line - 1.55, 0.42, 1.42, "CONTENT", ST_DARK_BLUE, WHITE, size=10)
-    box(slide, 0.0, y_line + 0.15, 0.42, 1.42, "PROMO", ST_DARK_BLUE, WHITE, size=10)
+    box(slide, 0.0, y_line - 1.55, 0.42, 1.42, "CONTENT", ST_DARK_BLUE, WHITE, size=LABEL_SIZE)
+    box(slide, 0.0, y_line + 0.15, 0.42, 1.42, "PROMO", ST_DARK_BLUE, WHITE, size=LABEL_SIZE)
 
     # Checkpoints on axis
     for cp in checkpoints:
@@ -555,7 +576,7 @@ def add_activation_timeline(
         dot.line.width = Pt(1.5)
         if cp.get("label"):
             label(slide, x - 0.35, y_line - 0.42, 0.8, cp["label"], color=ST_DARK_BLUE,
-                  size=10, bold=False, align=PP_ALIGN.CENTER)
+                  size=LABEL_SIZE, bold=False, align=PP_ALIGN.CENTER)
 
     # Activity cards above axis
     for i, item in enumerate(top_items):
@@ -564,8 +585,8 @@ def add_activation_timeline(
         y = y_line - 1.2 - (0.62 * (i % 2))
         fc = item.get("color", ST_YELLOW)
         tc = text_on(fc)
-        box(slide, item["x"] - w / 2, y, w, h, item["title"], fc, tc, size=11,
-            align=PP_ALIGN.LEFT, sub=item.get("note"), sub_size=10)
+        box(slide, item["x"] - w / 2, y, w, h, item["title"], fc, tc, size=CAPTION_SIZE,
+            align=PP_ALIGN.LEFT, sub=item.get("note"), sub_size=LABEL_SIZE)
         arrow(slide, item["x"], y + h, item["x"], y_line - 0.12, color=GRAY_3, width=1.2)
 
     # Activity cards below axis
@@ -575,8 +596,8 @@ def add_activation_timeline(
         y = y_line + 0.26 + (0.62 * (i % 2))
         fc = item.get("color", GRAY_1)
         tc = text_on(fc)
-        box(slide, item["x"] - w / 2, y, w, h, item["title"], fc, tc, size=11,
-            align=PP_ALIGN.LEFT, sub=item.get("note"), sub_size=10)
+        box(slide, item["x"] - w / 2, y, w, h, item["title"], fc, tc, size=CAPTION_SIZE,
+            align=PP_ALIGN.LEFT, sub=item.get("note"), sub_size=LABEL_SIZE)
         arrow(slide, item["x"], y, item["x"], y_line + 0.12, color=GRAY_3, width=1.2)
 
 
@@ -584,7 +605,7 @@ def timeline_template_slide(prs, title, message, checkpoints, top_items=None, bo
     """One-call template: title + message bar + 2-lane timeline."""
     slide = title_only_slide(prs)
     corner_accent(slide)
-    add_title(slide, title, align=PP_ALIGN.RIGHT, size=TITLE_SIZE + 2)
+    add_title(slide, title, align=PP_ALIGN.RIGHT)
     add_message_bar(slide, message, fill_color=ST_LIGHT_BLUE)
     add_activation_timeline(slide, checkpoints, top_items=top_items, bottom_items=bottom_items)
     return slide
@@ -636,7 +657,7 @@ def footer(slide, text):
     tf.text = text
     for r in tf.paragraphs[0].runs:
         r.font.name = FONT
-        r.font.size = Pt(9)
+        r.font.size = Pt(LABEL_SIZE)
         r.font.color.rgb = ST_DARK_BLUE
     return tb
 
@@ -666,7 +687,7 @@ def closing_slide(prs, logo_path=None, tagline="Our technology starts with You")
     no_autofit(tf)
     tf.text = tagline
     tf.paragraphs[0].alignment = PP_ALIGN.CENTER
-    _style(tf, WHITE, 32, bold=True)
+    _style(tf, WHITE, CLOSING_TAGLINE_SIZE, bold=True)
     band = slide.shapes.add_shape(
         MSO_SHAPE.RECTANGLE, Inches(0), Inches(5.95), Inches(SLIDE_W), Inches(1.55)
     )
@@ -681,6 +702,6 @@ def closing_slide(prs, logo_path=None, tagline="Our technology starts with You")
         p.space_after = Pt(2)
         for r in p.runs:
             r.font.name = FONT
-            r.font.size = Pt(8)
+            r.font.size = Pt(FOOTNOTE_SIZE)
             r.font.color.rgb = ST_DARK_BLUE
     return slide
