@@ -56,6 +56,7 @@
   .group{display:flex;flex-direction:column;gap:9px;}
   .group>.t{font-size:12px;font-weight:bold;color:var(--muted);}
   .group>.t .opt{font-weight:normal;color:#9AA7B5;}
+  .group>.t .tip{font-weight:normal;color:#9AA7B5;font-size:11px;}
 
   .seg{display:flex;gap:6px;flex-wrap:wrap;}
   .seg button{flex:1;min-width:36px;padding:9px 0;border:1px solid #DCE2E8;background:#fff;color:var(--muted);border-radius:8px;font-size:13px;cursor:pointer;transition:.15s;}
@@ -175,7 +176,7 @@
       <div class="rule"></div>
 
       <div class="group">
-        <span class="t" data-i18n="pagesLabel">页数</span>
+        <span class="t"><span data-i18n="pagesLabel">页数</span> <span class="tip" data-i18n="pagesTip">tips：建议一个主题生成多页后，在线编辑再合并，内容更丰富一些</span></span>
         <div class="seg" id="seg"></div>
       </div>
 
@@ -278,6 +279,7 @@ const I18N = {
     reqPlaceholder: '例：根据上传文档做一页 ST 品牌合规 PPT 给领导汇报，突出三个核心数据…',
     tryLabel: '试试',
     pagesLabel: '页数',
+    pagesTip: 'tips：建议一个主题生成多页后，在线编辑再合并，内容更丰富一些',
     uiLangLabel: '界面语言',
     deckLangLabel: '幻灯片语言',
     refDocs: '参考文档',
@@ -341,6 +343,7 @@ const I18N = {
     reqPlaceholder: 'e.g. One ST-brand slide for leadership, highlighting three key metrics from the upload…',
     tryLabel: 'Try',
     pagesLabel: 'Pages',
+    pagesTip: 'Tip: generate multiple pages per topic, then merge via online edit for richer content',
     uiLangLabel: 'Interface language',
     deckLangLabel: 'Slide language',
     refDocs: 'Reference files',
@@ -404,6 +407,7 @@ const I18N = {
     reqPlaceholder: '例：アップロード資料から ST ブランド準拠の 1 枚スライドを作成、3 つの核心データを強調…',
     tryLabel: '例',
     pagesLabel: '枚数',
+    pagesTip: 'ヒント：1 テーマは複数枚で生成し、オンライン編集で統合すると内容が充実します',
     uiLangLabel: '画面言語',
     deckLangLabel: 'スライド言語',
     refDocs: '参考資料',
