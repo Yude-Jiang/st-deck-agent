@@ -99,6 +99,9 @@ async def api_config():
             "max_upload_files": config.MAX_UPLOAD_FILES,
             "max_upload_file_mb": config.MAX_UPLOAD_FILE_BYTES // (1024 * 1024),
             "languages": ["zh", "en", "ja"],
+            "refresh_enabled": config.REFRESH_ENABLED,
+            "refresh_implemented": config.REFRESH_IMPLEMENTED,
+            "max_refresh_pages": config.MAX_REFRESH_PAGES,
         },
         headers={"Cache-Control": "no-store"},
     )

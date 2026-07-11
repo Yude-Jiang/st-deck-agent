@@ -6,7 +6,26 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATE = ROOT / "workspace_template"
+CONFIG_DIR = ROOT / "config"
 SESSIONS = Path(os.environ.get("SESSIONS_DIR", "/tmp/sessions"))
+
+# Deck Refresh (independent module; default off — no impact on Deck Generate)
+REFRESH_ENABLED = os.environ.get("REFRESH_ENABLED", "false").lower() in (
+    "1",
+    "true",
+    "yes",
+)
+REFRESH_IMPLEMENTED = os.environ.get("REFRESH_IMPLEMENTED", "false").lower() in (
+    "1",
+    "true",
+    "yes",
+)
+MAX_REFRESH_PAGES = int(os.environ.get("MAX_REFRESH_PAGES", "20"))
+REFRESH_GCS_BACKUP = os.environ.get("REFRESH_GCS_BACKUP", "false").lower() in (
+    "1",
+    "true",
+    "yes",
+)
 
 MAX_PAGES = int(os.environ.get("MAX_PAGES", "6"))
 ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN", "").strip()

@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "enabled": false,
+  "labels": {},
+  "_comment": "Reserved for v1.1+ Purview sensitivity label GUID mapping. ST tenant GUIDs go here when available. Format: \"<guid>\": {\"name_zh\": \"...\", \"name_en\": \"...\", \"block\": true}"
+}

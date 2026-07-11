@@ -32,6 +32,7 @@ RUN pip install --upgrade pip \
 RUN playwright install chromium
 
 COPY app ./app
+COPY config ./config
 COPY workspace_template ./workspace_template
 
 EXPOSE 8080

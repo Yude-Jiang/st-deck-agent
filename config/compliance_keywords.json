@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "match": {
+    "case_insensitive": true,
+    "merge_text_runs": true,
+    "prefer_longest_phrase_first": true
+  },
+  "scan_core_properties": true,
+  "phrases_en": [],
+  "phrases_zh": [],
+  "_comment": "Reserved keyword fallback list. Populate phrases_* and set compliance.json keyword_enabled=true to activate."
+}

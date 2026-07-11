@@ -48,7 +48,11 @@ gcloud run deploy st-deck-agent \
 | `SESSION_TTL_HOURS` | `24` | Auto-delete session workspaces after this age. |
 | `SESSION_CLEANUP_INTERVAL_SEC` | `3600` | How often to sweep expired sessions. |
 | `RUN_TIMEOUT_SEC` | `540` | Max seconds per agent run. |
-| `GCS_BUCKET` | *(empty)* | Optional. Persist session tarballs for restore after instance restart. |
+| `GCS_BUCKET` | *(empty)* | Optional. Persist session tarballs for restore after instance restart. **Not used for refresh sessions.** |
+| `REFRESH_ENABLED` | `false` | Expose Deck Refresh UI/API (independent module; default off). |
+| `REFRESH_IMPLEMENTED` | `false` | End-to-end refresh available when true. |
+| `MAX_REFRESH_PAGES` | `20` | Max slides per refresh request. |
+| `REFRESH_GCS_BACKUP` | `false` | If `GCS_BUCKET` set, refresh sessions still skip backup when false. |
 | `SESSIONS_DIR` | `/tmp/sessions` | Workspace root (tmpfs on Cloud Run). |
 
 ## Modes
