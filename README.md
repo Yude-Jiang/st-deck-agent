@@ -14,6 +14,8 @@ uvicorn app.main:app --reload --port 8080
 
 Open http://localhost:8080
 
+> **Cloud Shell:** Home disk is limited. If `pip install` fails with `No space left on device`, or `cursor_sdk` shows `SyntaxError: unterminated string literal`, see [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) — remove the partial install and use `pip install --no-cache-dir`.
+
 ## Deploy (Cloud Run)
 
 Cloud Run **service name:** `st-deck-agent` (keep this name — do not rename when redeploying).
