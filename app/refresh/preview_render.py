@@ -3,10 +3,16 @@ from __future__ import annotations
 
 import glob
 import os
+import re
 import shutil
 import subprocess
 import tempfile
 from pathlib import Path
+
+
+def _natural_png_key(path: Path) -> tuple[int, str]:
+    m = re.search(r"-(\d+)\.png$", path.name)
+    return (int(m.group(1)) if m else 10**9, path.name)
 
 
 def render_previews(pptx: Path, outdir: Path, prefix: str) -> list[Path]:
@@ -47,5 +53,5 @@ def render_previews(pptx: Path, outdir: Path, prefix: str) -> list[Path]:
             capture_output=True,
         )
 
-    pngs = sorted(outdir.glob(f"{prefix}-*.png"), key=lambda p: p.name)
+    pngs = sorted(outdir.glob(f"{prefix}-*.png"), key=_natural_png_key)
     return pngs

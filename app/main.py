@@ -35,7 +35,7 @@ from .runner import (
     run_edit,
     run_generate,
 )
-from .security import guard_request, user_facing_error
+from .security import guard_request, user_facing_error, verify_access
 from .sessions import (
     cleanup_expired_sessions,
     deck_download_name,
@@ -343,8 +343,10 @@ async def refresh_start(req: Request):
 
 @app.get("/file/{sid}/{name}")
 async def get_file(request: Request, sid: str, name: str):
-    if rej := _reject(request):
-        return rej
+    # Auth only — do not rate-limit preview image loads (N slides × before/after).
+    auth_err = verify_access(request)
+    if auth_err:
+        return JSONResponse({"error": auth_err}, status_code=401)
     if not SID_RE.match(sid):
         return JSONResponse({"error": "not found"}, status_code=404)
     if not FILE_RE.match(name):

@@ -210,12 +210,25 @@ def _disable_autofit(shape, log: Changelog, slide_idx: int) -> None:
         log.skip(slide_idx, shape.shape_id, "autofit_unavailable")
 
 
-def _refresh_text_style(shape, log: Changelog, slide_idx: int, fill_rgb: RGBColor | None) -> None:
+def _refresh_text_style(
+    shape,
+    log: Changelog,
+    slide_idx: int,
+    fill_rgb: RGBColor | None,
+    *,
+    conservative: bool = False,
+) -> None:
     if not getattr(shape, "has_text_frame", False):
         return
     font_pt = _first_font_size_pt(shape)
     role = _guess_role(shape, font_pt)
-    target_pt = _snap_size(font_pt or float(_target_size(role)), role)
+    # Cover / title slides: keep large display sizes; only normalize font + contrast.
+    if conservative and font_pt is not None and font_pt >= 24:
+        target_pt = int(round(font_pt))
+        snap_size = False
+    else:
+        target_pt = _snap_size(font_pt or float(_target_size(role)), role)
+        snap_size = True
     contrast = rc.text_on(fill_rgb) if fill_rgb is not None else None
 
     for run in _iter_runs(shape):
@@ -231,29 +244,34 @@ def _refresh_text_style(shape, log: Changelog, slide_idx: int, fill_rgb: RGBColo
         except Exception:  # noqa: BLE001
             pass
 
-        try:
-            cur = run.font.size.pt if run.font.size else None
-            if cur is None or abs(cur - target_pt) >= 1.0:
-                run.font.size = Pt(target_pt)
-                log.add(
-                    slide_idx,
-                    shape.shape_id,
-                    "font_size",
-                    f"{cur or '?'}pt → {target_pt}pt ({role})",
-                )
-        except Exception:  # noqa: BLE001
-            pass
+        if snap_size:
+            try:
+                cur = run.font.size.pt if run.font.size else None
+                if cur is None or abs(cur - target_pt) >= 1.0:
+                    run.font.size = Pt(target_pt)
+                    log.add(
+                        slide_idx,
+                        shape.shape_id,
+                        "font_size",
+                        f"{cur or '?'}pt → {target_pt}pt ({role})",
+                    )
+            except Exception:  # noqa: BLE001
+                pass
 
         if contrast is not None:
             try:
-                cur_c = run.font.color.rgb if run.font.color and run.font.color.type is not None else None
+                cur_c = (
+                    run.font.color.rgb
+                    if run.font.color and run.font.color.type is not None
+                    else None
+                )
                 if cur_c != contrast:
                     run.font.color.rgb = contrast
                     log.add(slide_idx, shape.shape_id, "contrast", f"text → {contrast}")
             except Exception:  # noqa: BLE001
                 pass
 
-        if role == "msg_bar":
+        if role == "msg_bar" and not conservative:
             try:
                 if not run.font.bold:
                     run.font.bold = True
@@ -262,10 +280,14 @@ def _refresh_text_style(shape, log: Changelog, slide_idx: int, fill_rgb: RGBColo
                 pass
 
 
-def _refresh_fill(shape, log: Changelog, slide_idx: int) -> RGBColor | None:
+def _refresh_fill(
+    shape, log: Changelog, slide_idx: int, *, conservative: bool = False
+) -> RGBColor | None:
     fill_rgb = _get_fill_rgb(shape)
     if fill_rgb is None:
         return None
+    # Cover slides: only snap fills that are clearly off-brand (far from palette).
+    min_dist = rc.COLOR_SNAP_MIN_DIST * (1.6 if conservative else 1.0)
     tup = _rgb_tuple(fill_rgb)
     if tup is None:
         return fill_rgb
@@ -274,7 +296,7 @@ def _refresh_fill(shape, log: Changelog, slide_idx: int) -> RGBColor | None:
     if nt is None:
         return fill_rgb
     d = _dist(tup, nt)
-    if d >= rc.COLOR_SNAP_MIN_DIST and nearest != fill_rgb:
+    if d >= min_dist and nearest != fill_rgb:
         if _set_fill(shape, nearest):
             log.add(
                 slide_idx,
@@ -288,38 +310,30 @@ def _refresh_fill(shape, log: Changelog, slide_idx: int) -> RGBColor | None:
 
 def _refresh_picture(shape, log: Changelog, slide_idx: int) -> None:
     try:
-        # Lock aspect: if width/height ratio wildly off from 1..4 typical, skip
         w = _emu_to_in(shape.width)
         h = _emu_to_in(shape.height)
         if h <= 0 or w <= 0:
             return
-        # python-pptx picture has crop; we only ensure non-zero size
-        if hasattr(shape, "crop_left"):
-            # No content replacement — just log if extreme stretch vs common 16:9 cell
-            pass
         log.add(slide_idx, shape.shape_id, "picture", "aspect preserved (no replace)")
     except Exception:  # noqa: BLE001
         log.skip(slide_idx, shape.shape_id, "picture_lock_failed")
 
 
 def _align_group(shapes: list, axis: str, log: Changelog, slide_idx: int) -> None:
-    """Snap left/top/center of similar shapes when within 2x tolerance cluster."""
+    """Snap left/top of similar shapes when within 2x tolerance cluster."""
     if len(shapes) < 2:
         return
     if axis == "left":
-        vals = [s.left for s in shapes]
         getter = lambda s: s.left  # noqa: E731
         setter = lambda s, v: setattr(s, "left", v)  # noqa: E731
     elif axis == "top":
-        vals = [s.top for s in shapes]
         getter = lambda s: s.top  # noqa: E731
         setter = lambda s, v: setattr(s, "top", v)  # noqa: E731
     else:
         return
 
     tol = int(Inches(rc.ALIGN_TOLERANCE_IN))
-    # Cluster around median
-    vals_sorted = sorted(vals)
+    vals_sorted = sorted(getter(s) for s in shapes)
     median = vals_sorted[len(vals_sorted) // 2]
     cluster = [s for s in shapes if abs(getter(s) - median) <= tol * 2]
     if len(cluster) < 2:
@@ -340,7 +354,6 @@ def _align_group(shapes: list, axis: str, log: Changelog, slide_idx: int) -> Non
 def _equalize_column_widths(shapes: list, log: Changelog, slide_idx: int) -> None:
     if len(shapes) < 2:
         return
-    # Group by similar top
     tol = int(Inches(rc.ALIGN_TOLERANCE_IN))
     by_row: dict[int, list] = {}
     for s in shapes:
@@ -350,7 +363,6 @@ def _equalize_column_widths(shapes: list, log: Changelog, slide_idx: int) -> Non
         if len(row) < 2:
             continue
         widths = [s.width for s in row]
-        # Only equalize if widths already similar (< 15%)
         avg = sum(widths) / len(widths)
         if avg <= 0:
             continue
@@ -369,7 +381,30 @@ def _equalize_column_widths(shapes: list, log: Changelog, slide_idx: int) -> Non
                 )
 
 
-def _process_shape(shape, log: Changelog, slide_idx: int) -> None:
+def _slide_looks_like_cover(slide, slide_idx: int) -> bool:
+    """Heuristic: first slide or large dark full-bleed field ≈ presentation title."""
+    if slide_idx == 1:
+        return True
+    try:
+        for shape in slide.shapes:
+            try:
+                w = _emu_to_in(shape.width)
+                h = _emu_to_in(shape.height)
+                if w >= 12.5 and h >= 6.5:
+                    fill = _get_fill_rgb(shape)
+                    tup = _rgb_tuple(fill) if fill else None
+                    if tup and (tup[0] + tup[1] + tup[2]) < 180:
+                        return True
+            except Exception:  # noqa: BLE001
+                continue
+    except Exception:  # noqa: BLE001
+        pass
+    return False
+
+
+def _process_shape(
+    shape, log: Changelog, slide_idx: int, *, conservative: bool = False
+) -> None:
     try:
         stype = shape.shape_type
     except Exception:  # noqa: BLE001
@@ -379,7 +414,7 @@ def _process_shape(shape, log: Changelog, slide_idx: int) -> None:
     if stype == MSO_SHAPE_TYPE.GROUP:
         try:
             for child in shape.shapes:
-                _process_shape(child, log, slide_idx)
+                _process_shape(child, log, slide_idx, conservative=conservative)
         except Exception:  # noqa: BLE001
             log.skip(slide_idx, shape.shape_id, "group_unreadable")
         return
@@ -410,14 +445,17 @@ def _process_shape(shape, log: Changelog, slide_idx: int) -> None:
         _refresh_picture(shape, log, slide_idx)
         return
 
-    fill_rgb = _refresh_fill(shape, log, slide_idx)
+    fill_rgb = _refresh_fill(shape, log, slide_idx, conservative=conservative)
     _disable_autofit(shape, log, slide_idx)
-    _refresh_text_style(shape, log, slide_idx, fill_rgb)
+    _refresh_text_style(
+        shape, log, slide_idx, fill_rgb, conservative=conservative
+    )
 
-    # Light line cleanup for rectangles with thick borders
+    # Light line cleanup for rectangles with thick borders (skip on cover)
+    if conservative:
+        return
     try:
         if shape.line and shape.line.width and shape.line.width.pt and shape.line.width.pt > 2.5:
-            # Only thin decorative borders; do not remove
             old = shape.line.width.pt
             shape.line.width = Pt(1.0)
             log.add(slide_idx, shape.shape_id, "line", f"width {old:.1f} → 1.0pt")
@@ -442,9 +480,12 @@ def refresh_presentation(src: Path, dest: Path, changelog_path: Path | None = No
         pass
 
     for si, slide in enumerate(prs.slides, start=1):
+        cover = _slide_looks_like_cover(slide, si)
+        if cover:
+            log.warnings.append(f"slide_{si}_cover_conservative")
         auto_shapes = []
         for shape in slide.shapes:
-            _process_shape(shape, log, si)
+            _process_shape(shape, log, si, conservative=cover)
             try:
                 if shape.shape_type in (
                     MSO_SHAPE_TYPE.AUTO_SHAPE,
@@ -454,10 +495,11 @@ def refresh_presentation(src: Path, dest: Path, changelog_path: Path | None = No
                     auto_shapes.append(shape)
             except Exception:  # noqa: BLE001
                 continue
-        # Alignment / symmetry passes (conservative)
-        _align_group(auto_shapes, "left", log, si)
-        _align_group(auto_shapes, "top", log, si)
-        _equalize_column_widths(auto_shapes, log, si)
+        # Alignment / symmetry — skip on cover title slides
+        if not cover:
+            _align_group(auto_shapes, "left", log, si)
+            _align_group(auto_shapes, "top", log, si)
+            _equalize_column_widths(auto_shapes, log, si)
 
     dest.parent.mkdir(parents=True, exist_ok=True)
     prs.save(str(dest))
