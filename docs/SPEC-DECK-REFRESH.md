@@ -7,14 +7,17 @@
 
 ---
 
-## 本 PR 范围（Scaffold）
+## 本 PR 范围（Scaffold → MVP 管道）
 
-- [x] `config/` 合规配置占位（Purview GUID、关键词 **默认关闭**）
-- [x] `app/refresh/` 合规扫描管道骨架（**仅 file integrity 实现**）
-- [x] `REFRESH_ENABLED` / `REFRESH_IMPLEMENTED` 环境变量（默认 `false`）
-- [x] `/api/config` 暴露焕新开关（前端尚未接 Tab）
-- [ ] 规则引擎 `refresh_deck.py` — 后续 PR
-- [ ] `/refresh/*` API + UI Tab — 后续 PR
+- [x] `config/` 合规配置（Purview GUID、关键词词表已填；**keyword_enabled 默认关闭**）
+- [x] `app/refresh/` 合规扫描（file integrity + 可开关 keyword）
+- [x] `REFRESH_ENABLED` 默认 `false`；`REFRESH_IMPLEMENTED` 默认 `true`（管道已就绪，UI 仍需显式打开）
+- [x] `/api/config` 暴露焕新开关
+- [x] 规则引擎 `app/refresh/refresh_deck.py` + changelog
+- [x] `/refresh/scan`、`/refresh/start` + 文件白名单扩展
+- [x] UI Tab「Deck 焕新」（仅 `REFRESH_ENABLED=true` 时显示）
+- [x] 只读建议：changelog → Markdown（无工具；不阻塞下载）
+- [ ] Cloud Run 端到端验证后再 merge `main`
 
 **对现网 Deck 生成的影响：无**（开关默认关闭，无新用户可见功能）
 

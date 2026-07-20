@@ -15,7 +15,8 @@ REFRESH_ENABLED = os.environ.get("REFRESH_ENABLED", "false").lower() in (
     "true",
     "yes",
 )
-REFRESH_IMPLEMENTED = os.environ.get("REFRESH_IMPLEMENTED", "false").lower() in (
+# True once e2e refresh pipeline is shipped on this branch (UI still gated by REFRESH_ENABLED).
+REFRESH_IMPLEMENTED = os.environ.get("REFRESH_IMPLEMENTED", "true").lower() in (
     "1",
     "true",
     "yes",

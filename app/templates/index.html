@@ -139,6 +139,25 @@
   .conduct-modal .mfoot{padding:8px 22px 22px;}
   .conduct-modal .mfoot button{width:100%;padding:13px;border:0;border-radius:9px;background:var(--navy);color:#fff;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 4px 12px rgba(3,35,75,.18);}
   .conduct-modal .mfoot button:hover{background:#021a33;}
+  .conduct-modal .mfoot.row{display:flex;gap:10px;}
+  .conduct-modal .mfoot.row button{flex:1;}
+  .conduct-modal .mfoot .btn-ghost{background:#fff;color:var(--navy);border:1px solid #D3DAE2;box-shadow:none;}
+
+  .mode-tabs{display:none;grid-column:1/-1;gap:8px;margin-bottom:-8px;}
+  .mode-tabs.on{display:flex;}
+  .mode-tabs button{padding:10px 18px;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;}
+  .mode-tabs button.on{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .promises{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;}
+  .promises li{font-size:12px;color:var(--muted);line-height:1.5;padding-left:14px;position:relative;}
+  .promises li::before{content:"";position:absolute;left:0;top:.55em;width:6px;height:6px;border-radius:50%;background:var(--yellow);}
+  .compare{display:flex;flex-direction:column;gap:16px;}
+  .compare-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media (max-width:700px){.compare-row{grid-template-columns:1fr;}}
+  .compare-row figure{margin:0;}
+  .compare-row figcaption{font-size:11px;color:var(--faint);margin-bottom:6px;font-weight:bold;}
+  .compare-row img{width:100%;border:1px solid var(--line);border-radius:8px;display:block;}
+  .advice{margin-top:16px;padding:14px 16px;background:#F7F9FB;border:1px solid #ECF0F3;border-radius:10px;font-size:13px;line-height:1.6;white-space:pre-wrap;}
+  #panelRefresh{display:none;}
 </style>
 </head>
 <body>
@@ -164,7 +183,12 @@
 </header>
 
 <main>
-  <section class="panel">
+  <div class="mode-tabs" id="modeTabs">
+    <button type="button" class="on" id="tabGen" data-i18n="tabGen">Deck 生成</button>
+    <button type="button" id="tabRefresh" data-i18n="tabRefresh">Deck 焕新</button>
+  </div>
+
+  <section class="panel" id="panelGen">
     <div class="phead"><span class="accent" style="background:var(--yellow)"></span><h2 data-i18n="panelBrief">撰写需求</h2><span class="sub" data-i18n="panelBriefSub">贴需求 / URL，可附参考文档</span></div>
     <div class="body">
       <textarea id="req" data-i18n-placeholder="reqPlaceholder" placeholder="例：根据上传文档做一页 ST 品牌合规 PPT 给领导汇报，突出三个核心数据…"></textarea>
@@ -205,6 +229,29 @@
     </div>
   </section>
 
+  <section class="panel" id="panelRefresh">
+    <div class="phead"><span class="accent" style="background:var(--yellow)"></span><h2 data-i18n="panelRefresh">Deck 焕新</h2><span class="sub" data-i18n="panelRefreshSub">上传自有 PPT，仅做视觉标准化</span></div>
+    <div class="body">
+      <ul class="promises">
+        <li data-i18n="promise1">不删页、不调序、不增页（含不添加 closing 页）。</li>
+        <li data-i18n="promise2">不修改幻灯片中的任何文字与数据。</li>
+        <li data-i18n="promise3">仅调整颜色、字体样式、对齐与对称等视觉属性。</li>
+      </ul>
+      <div class="rule"></div>
+      <div class="group">
+        <span class="t" data-i18n="refreshUpload">上传 .pptx</span>
+        <label class="drop" id="refreshDrop">
+          <input id="refreshFile" type="file" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" hidden/>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3CB4E6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5-5 5 5"></path><path d="M12 5v12"></path></svg>
+          <span class="d1" id="refreshDropLabel" data-i18n="refreshDropLabel">拖拽或点击选择 .pptx</span>
+          <span class="d2" data-i18n="refreshDropTypes">单文件 · 标准档视觉焕新</span>
+        </label>
+        <div class="filechips" id="refreshFilechips"></div>
+      </div>
+      <button type="button" class="cta" id="refreshGo"><span data-i18n="btnRefresh">开始焕新</span></button>
+    </div>
+  </section>
+
   <section class="panel work">
     <div class="phead"><span class="accent" style="background:var(--blue)"></span><h2 data-i18n="panelWork">工作台</h2><span class="pill idle" id="pill" data-i18n="pillIdle">待命</span></div>
     <div class="wbody">
@@ -216,6 +263,14 @@
         <div class="step"><span class="n">04</span><div class="tt"><b data-i18n="step4t">自检与修正</b><span data-i18n="step4d">逐张核对溢出、对比度、字号与配色，修脚本重渲染直到干净。</span></div></div>
       </div>
 
+      <div id="idleRefresh" style="display:none">
+        <p class="lead" data-i18n="idleRefreshLead">上传已定稿的 .pptx，规则引擎做标准档视觉修正；文案与页数不变。完成后可对比前后预览并下载。</p>
+        <div class="step"><span class="n">01</span><div class="tt"><b data-i18n="rstep1t">扫描</b><span data-i18n="rstep1d">检查文件完整性与可选密级关键词。</span></div></div>
+        <div class="step"><span class="n">02</span><div class="tt"><b data-i18n="rstep2t">焕新</b><span data-i18n="rstep2d">配色、对比度、字号、Arial、对齐与对称（不改字）。</span></div></div>
+        <div class="step"><span class="n">03</span><div class="tt"><b data-i18n="rstep3t">对比</b><span data-i18n="rstep3d">逐页 before / after 预览。</span></div></div>
+        <div class="step"><span class="n">04</span><div class="tt"><b data-i18n="rstep4t">建议</b><span data-i18n="rstep4d">只读报告：已自动修正 vs 建议您考虑。</span></div></div>
+      </div>
+
       <div id="log" style="display:none"></div>
 
       <div id="done" style="display:none">
@@ -224,6 +279,8 @@
           <span id="dl"></span>
         </div>
         <div id="slides"></div>
+        <div id="compare" class="compare" style="display:none"></div>
+        <div id="advice" class="advice" style="display:none"></div>
       </div>
 
       <div class="followup" id="edit">
@@ -246,6 +303,17 @@
     <div class="mhead"><h2 id="conductTitle"></h2></div>
     <div class="mbody"><ul id="conductList"></ul></div>
     <div class="mfoot"><button type="button" id="conductAck"></button></div>
+  </div>
+</div>
+
+<div id="keywordModal" class="modal-overlay" role="dialog" aria-modal="true">
+  <div class="conduct-modal">
+    <div class="mhead"><h2 id="keywordTitle"></h2></div>
+    <div class="mbody"><p id="keywordBody"></p><ul id="keywordHits"></ul></div>
+    <div class="mfoot row">
+      <button type="button" class="btn-ghost" id="keywordCancel"></button>
+      <button type="button" id="keywordAck"></button>
+    </div>
   </div>
 </div>
 
@@ -334,6 +402,32 @@ const I18N = {
       '根据公司内部合规要求，请您在使用前完成《人工智能法律合规意识》（Legal Awareness in Artificial Intelligence）培训。本工具创建者对因用户违规或不当使用而导致的任何后果不承担相关责任。',
     ],
     conductAck: '我已阅读并同意',
+    tabGen: 'Deck 生成',
+    tabRefresh: 'Deck 焕新',
+    panelRefresh: 'Deck 焕新',
+    panelRefreshSub: '上传自有 PPT，仅做视觉标准化',
+    promise1: '不删页、不调序、不增页（含不添加 closing 页）。',
+    promise2: '不修改幻灯片中的任何文字与数据。',
+    promise3: '仅调整颜色、字体样式、对齐与对称等视觉属性。',
+    refreshUpload: '上传 .pptx',
+    refreshDropLabel: '拖拽或点击选择 .pptx',
+    refreshDropSel: n => `已选：${n}`,
+    refreshDropTypes: '单文件 · 标准档视觉焕新',
+    btnRefresh: '开始焕新',
+    idleRefreshLead: '上传已定稿的 .pptx，规则引擎做标准档视觉修正；文案与页数不变。完成后可对比前后预览并下载。',
+    rstep1t: '扫描', rstep1d: '检查文件完整性与可选密级关键词。',
+    rstep2t: '焕新', rstep2d: '配色、对比度、字号、Arial、对齐与对称（不改字）。',
+    rstep3t: '对比', rstep3d: '逐页 before / after 预览。',
+    rstep4t: '建议', rstep4d: '只读报告：已自动修正 vs 建议您考虑。',
+    doneRefresh: n => `已焕新 <b>${n}</b> 页`,
+    beforeLabel: '焕新前',
+    afterLabel: '焕新后',
+    keywordTitle: '检测到可能的密级标识',
+    keywordBody: '工具基于固定关键词辅助识别，不能替代人工保密审查。请确认文件已脱敏且您有权使用本工具处理。继续处理责任由您承担。',
+    keywordCancel: '取消',
+    keywordAck: '我已确认有权处理并继续',
+    refreshNeedFile: '请先选择一个 .pptx 文件',
+    refreshUnavail: 'Deck 焕新暂不可用',
   },
   en: {
     brandSub: 'Brand-compliant PPT · One-click decks',
@@ -398,6 +492,32 @@ const I18N = {
       'Per internal compliance requirements, please complete the Legal Awareness in Artificial Intelligence training before use. The creators of this tool accept no liability for any consequences arising from user violations or misuse.',
     ],
     conductAck: 'I understand and agree',
+    tabGen: 'Deck Generate',
+    tabRefresh: 'Deck Refresh',
+    panelRefresh: 'Deck Refresh',
+    panelRefreshSub: 'Upload your PPT — visual standardization only',
+    promise1: 'No delete, reorder, or add slides (including no closing slide).',
+    promise2: 'No changes to slide text or data.',
+    promise3: 'Only colors, type styles, alignment, and symmetry are adjusted.',
+    refreshUpload: 'Upload .pptx',
+    refreshDropLabel: 'Drag & drop or click to choose .pptx',
+    refreshDropSel: n => `Selected: ${n}`,
+    refreshDropTypes: 'Single file · Standard visual refresh',
+    btnRefresh: 'Start refresh',
+    idleRefreshLead: 'Upload a finalized .pptx. Rules apply a standard visual pass; text and page count stay unchanged. Compare before/after and download.',
+    rstep1t: 'Scan', rstep1d: 'File integrity and optional keyword check.',
+    rstep2t: 'Refresh', rstep2d: 'Palette, contrast, type size, Arial, alignment (no text edits).',
+    rstep3t: 'Compare', rstep3d: 'Per-slide before / after previews.',
+    rstep4t: 'Advice', rstep4d: 'Read-only: applied vs suggested.',
+    doneRefresh: n => `<b>${n}</b> slide(s) refreshed`,
+    beforeLabel: 'Before',
+    afterLabel: 'After',
+    keywordTitle: 'Possible confidentiality markers',
+    keywordBody: 'Keyword-based assistive check only — not a substitute for human review. Confirm the file is sanitized and you are authorized. You accept responsibility for continuing.',
+    keywordCancel: 'Cancel',
+    keywordAck: 'I confirm and continue',
+    refreshNeedFile: 'Please choose a .pptx file first',
+    refreshUnavail: 'Deck Refresh is not available yet',
   },
   ja: {
     brandSub: 'ブランド準拠 PPT · ワンクリック生成',
@@ -462,6 +582,32 @@ const I18N = {
       '社内コンプライアンス要件に基づき、ご利用前に「Legal Awareness in Artificial Intelligence（人工知能における法的意識）」研修を修了してください。本ツールの作成者は、ユーザーの違反または不適切な利用により生じた結果について一切の責任を負いません。',
     ],
     conductAck: '理解しました',
+    tabGen: 'Deck 生成',
+    tabRefresh: 'Deck 刷新',
+    panelRefresh: 'Deck 刷新',
+    panelRefreshSub: '自作 PPT をアップロード（見た目のみ標準化）',
+    promise1: 'ページの削除・並べ替え・追加はしません（closing 追加なし）。',
+    promise2: 'スライドの文字・データは変更しません。',
+    promise3: '色・フォント・整列・対称など見た目のみ調整します。',
+    refreshUpload: '.pptx をアップロード',
+    refreshDropLabel: 'ドラッグ＆ドロップまたはクリックで選択',
+    refreshDropSel: n => `選択済み：${n}`,
+    refreshDropTypes: '1 ファイル · 標準ビジュアル刷新',
+    btnRefresh: '刷新を開始',
+    idleRefreshLead: '確定済みの .pptx をアップロード。ルールで標準ビジュアル修正（文字・枚数は不変）。前後比較してダウンロード。',
+    rstep1t: 'スキャン', rstep1d: 'ファイル整合性とキーワード（任意）。',
+    rstep2t: '刷新', rstep2d: '配色・コントラスト・字号・Arial・整列（文字は不変）。',
+    rstep3t: '比較', rstep3d: 'ページごとの before / after。',
+    rstep4t: '提案', rstep4d: '読み取り専用：自動修正 vs ご検討事項。',
+    doneRefresh: n => `<b>${n}</b> 枚を刷新`,
+    beforeLabel: '刷新前',
+    afterLabel: '刷新後',
+    keywordTitle: '機密標識の可能性',
+    keywordBody: 'キーワードによる補助検出です。人が確認してください。権限と脱敏を確認のうえ続行してください。責任は利用者にあります。',
+    keywordCancel: 'キャンセル',
+    keywordAck: '権限を確認して続行',
+    refreshNeedFile: '先に .pptx を選択してください',
+    refreshUnavail: 'Deck 刷新は現在利用できません',
   },
 };
 
@@ -473,8 +619,11 @@ let deckLang = 'zh';
 let abortCtl = null;
 let hadError = false;
 let streamBuf = { thinking: null, text: null };
-let appConfig = { max_pages: 6, auth_required: false };
+let appConfig = { max_pages: 6, auth_required: false, refresh_enabled: false, refresh_implemented: false };
 let slideCount = 0;
+let uiMode = 'generate'; // 'generate' | 'refresh'
+let refreshSession = null;
+let refreshPendingAck = false;
 
 try { currentSession = localStorage.getItem(LS_SESSION) || null; } catch (_) {}
 try { chatActive = localStorage.getItem(LS_CHAT) === '1'; } catch (_) {}
@@ -636,6 +785,14 @@ async function loadConfig() {
     const saved = localStorage.getItem(LS_TOKEN);
     if (saved) $('#token').value = saved;
   }
+  if (appConfig.refresh_enabled) {
+    $('#modeTabs').classList.add('on');
+    $('#tabGen').onclick = () => setUiMode('generate');
+    $('#tabRefresh').onclick = () => setUiMode('refresh');
+  } else {
+    $('#modeTabs').classList.remove('on');
+    setUiMode('generate');
+  }
 }
 
 function buildPageSeg() {
@@ -736,9 +893,26 @@ function setPill(state, text) {
 }
 
 function showPhase(which) {
-  $('#idle').style.display = which === 'idle' ? '' : 'none';
+  const genIdle = uiMode === 'generate';
+  $('#idle').style.display = (which === 'idle' && genIdle) ? '' : 'none';
+  $('#idleRefresh').style.display = (which === 'idle' && !genIdle) ? '' : 'none';
   logEl.style.display = which === 'run' ? '' : 'none';
   $('#done').style.display = which === 'done' ? '' : 'none';
+}
+
+function setUiMode(mode) {
+  uiMode = mode;
+  const refresh = mode === 'refresh';
+  $('#panelGen').style.display = refresh ? 'none' : '';
+  $('#panelRefresh').style.display = refresh ? '' : 'none';
+  $('#tabGen').classList.toggle('on', !refresh);
+  $('#tabRefresh').classList.toggle('on', refresh);
+  $('#edit').style.display = 'none';
+  $('#chatbox').style.display = 'none';
+  if (!abortCtl) {
+    showPhase('idle');
+    setPill('idle', t('pillIdle'));
+  }
 }
 
 async function streamSSE(resp, onEvent) {
@@ -769,9 +943,16 @@ async function streamSSE(resp, onEvent) {
 }
 
 function renderResult(r) {
+  if (r.mode === 'refresh' || (r.session && String(r.session).startsWith('refresh-'))) {
+    renderRefreshResult(r);
+    return;
+  }
   if (r.session) { currentSession = r.session; saveSession(); }
   const slides = $('#slides');
   slides.innerHTML = '';
+  $('#compare').style.display = 'none';
+  $('#compare').innerHTML = '';
+  $('#advice').style.display = 'none';
   (r.previews || []).forEach((url, i) => {
     const img = document.createElement('img');
     img.src = fileUrl(url);
@@ -795,6 +976,60 @@ function renderResult(r) {
   else if (chatActive && currentSession) showPhase('run'); // keep log visible after planning turn
   $('#edit').style.display = (!chatActive && r.deck) ? 'block' : 'none';
   $('#chatbox').style.display = (chatActive && currentSession) ? 'block' : 'none';
+}
+
+function renderRefreshResult(r) {
+  if (r.session) refreshSession = r.session;
+  $('#slides').innerHTML = '';
+  const cmp = $('#compare');
+  cmp.innerHTML = '';
+  const befores = r.befores || [];
+  const afters = r.afters || [];
+  const n = Math.max(befores.length, afters.length);
+  slideCount = n;
+  $('#doneCnt').innerHTML = t('doneRefresh', n || (r.summary ? Object.values(r.summary).reduce((a, b) => a + b, 0) : 0));
+  for (let i = 0; i < n; i++) {
+    const row = document.createElement('div');
+    row.className = 'compare-row';
+    const mk = (url, label) => {
+      const fig = document.createElement('figure');
+      const cap = document.createElement('figcaption');
+      cap.textContent = label + ' · ' + t('slideAlt', i + 1);
+      fig.appendChild(cap);
+      if (url) {
+        const img = document.createElement('img');
+        img.src = fileUrl(url);
+        img.alt = label;
+        fig.appendChild(img);
+      }
+      return fig;
+    };
+    row.appendChild(mk(befores[i], t('beforeLabel')));
+    row.appendChild(mk(afters[i], t('afterLabel')));
+    cmp.appendChild(row);
+  }
+  cmp.style.display = n ? '' : 'none';
+  const adv = $('#advice');
+  if (r.advice) {
+    adv.textContent = r.advice;
+    adv.style.display = '';
+  } else {
+    adv.style.display = 'none';
+  }
+  const dl = $('#dl');
+  dl.innerHTML = '';
+  if (r.deck) {
+    const a = document.createElement('a');
+    a.className = 'dl';
+    a.href = fileUrl(r.deck);
+    const fn = r.download_name || 'deck-refreshed.pptx';
+    a.download = fn;
+    a.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#03234B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5 5 5-5"></path><path d="M12 15V3"></path></svg> ' + t('download') + ' ' + fn;
+    dl.appendChild(a);
+  }
+  $('#edit').style.display = 'none';
+  $('#chatbox').style.display = 'none';
+  if (r.deck || n) showPhase('done');
 }
 
 function handle(ev) {
@@ -823,14 +1058,18 @@ function buildFormData() {
 const go = $('#go');
 
 function setBusy(running) {
+  const btn = uiMode === 'refresh' ? $('#refreshGo') : go;
+  const idleLabel = uiMode === 'refresh'
+    ? t('btnRefresh')
+    : (chatActive ? t('btnDiscuss') : t('btnGenerate'));
   if (running) {
-    go.disabled = false;
-    go.classList.add('stop');
-    go.querySelector('span').textContent = t('btnStop');
+    btn.disabled = false;
+    btn.classList.add('stop');
+    btn.querySelector('span').textContent = t('btnStop');
   } else {
-    go.classList.remove('stop');
-    go.disabled = false;
-    go.querySelector('span').textContent = chatActive ? t('btnDiscuss') : t('btnGenerate');
+    btn.classList.remove('stop');
+    btn.disabled = false;
+    btn.querySelector('span').textContent = idleLabel;
   }
 }
 
@@ -912,6 +1151,139 @@ $('#sendChat').onclick = async () => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ session: currentSession, message: v }),
   }, $('#chatstatus'));
+};
+
+function renderRefreshFiles() {
+  const f = $('#refreshFile').files[0];
+  $('#refreshDrop').classList.toggle('has', !!f);
+  $('#refreshDropLabel').textContent = f ? t('refreshDropSel', f.name) : t('refreshDropLabel');
+  $('#refreshFilechips').innerHTML = '';
+  if (f) {
+    const s = document.createElement('span');
+    s.className = 'fc';
+    s.textContent = f.name;
+    $('#refreshFilechips').appendChild(s);
+  }
+}
+
+$('#refreshFile').onchange = renderRefreshFiles;
+['dragover', 'dragenter'].forEach(e => {
+  $('#refreshDrop').addEventListener(e, ev => { ev.preventDefault(); $('#refreshDrop').classList.add('has'); });
+});
+$('#refreshDrop').addEventListener('drop', ev => {
+  ev.preventDefault();
+  if (ev.dataTransfer.files.length) {
+    $('#refreshFile').files = ev.dataTransfer.files;
+    renderRefreshFiles();
+  }
+});
+
+function hideKeywordModal() {
+  $('#keywordModal').classList.remove('open');
+  document.body.classList.remove('modal-open');
+}
+
+function showKeywordModal(hits) {
+  $('#keywordTitle').textContent = t('keywordTitle');
+  $('#keywordBody').textContent = t('keywordBody');
+  $('#keywordCancel').textContent = t('keywordCancel');
+  $('#keywordAck').textContent = t('keywordAck');
+  const ul = $('#keywordHits');
+  ul.innerHTML = '';
+  (hits || []).forEach(h => {
+    const li = document.createElement('li');
+    li.textContent = h.phrase || h;
+    ul.appendChild(li);
+  });
+  $('#keywordModal').classList.add('open');
+  document.body.classList.add('modal-open');
+}
+
+async function startRefresh(ack) {
+  if (!appConfig.refresh_implemented) {
+    logLine('err', '⚠ ' + t('refreshUnavail'));
+    setPill('err', t('pillErr'));
+    return;
+  }
+  if (!refreshSession) return;
+  await runStream('/refresh/start', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      session: refreshSession,
+      ack_keywords: !!ack,
+      language: uiLang,
+    }),
+  }, null);
+}
+
+$('#refreshGo').onclick = async () => {
+  if (abortCtl) { abortCtl.abort(); return; }
+  if (!conductAcked()) { showConductModal(); return; }
+  if (!appConfig.refresh_enabled) return;
+  const f = $('#refreshFile').files[0];
+  if (!f) { alert(t('refreshNeedFile')); return; }
+  hadError = false;
+  saveToken();
+  setPill('run', t('pillRun'));
+  showPhase('run');
+  logEl.innerHTML = '';
+  resetStreamBuf();
+  $('#compare').style.display = 'none';
+  $('#advice').style.display = 'none';
+  abortCtl = new AbortController();
+  const goBtn = $('#refreshGo');
+  goBtn.classList.add('stop');
+  goBtn.querySelector('span').textContent = t('btnStop');
+  try {
+    const fd = new FormData();
+    fd.append('file', f);
+    const resp = await fetch('/refresh/scan', {
+      method: 'POST',
+      body: fd,
+      signal: abortCtl.signal,
+      headers: authHeaders(),
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok) throw new Error(data.error || t('errRequest', resp.status));
+    refreshSession = data.session;
+    if (data.blocked && !data.require_ack) throw new Error((data.scan && data.scan.details && data.scan.details.message) || data.error || t('pillErr'));
+    if (data.require_ack || (data.scan && data.scan.require_ack)) {
+      refreshPendingAck = true;
+      abortCtl = null;
+      setBusy(false);
+      showKeywordModal((data.scan && data.scan.details && data.scan.details.hits) || []);
+      setPill('idle', t('pillIdle'));
+      showPhase('idle');
+      return;
+    }
+    abortCtl = null;
+    await startRefresh(false);
+  } catch (e) {
+    if (e.name === 'AbortError') {
+      logLine('line', t('logStopped'));
+      setPill('idle', t('pillStopped'));
+    } else {
+      logLine('err', '⚠ ' + (e.message || t('errNetwork')));
+      setPill('err', t('pillErr'));
+    }
+    abortCtl = null;
+    setBusy(false);
+  }
+};
+
+$('#keywordCancel').onclick = () => {
+  hideKeywordModal();
+  refreshPendingAck = false;
+  refreshSession = null;
+  $('#refreshFile').value = '';
+  renderRefreshFiles();
+};
+
+$('#keywordAck').onclick = async () => {
+  hideKeywordModal();
+  refreshPendingAck = false;
+  await startRefresh(true);
 };
 
 loadConfig().then(() => {
