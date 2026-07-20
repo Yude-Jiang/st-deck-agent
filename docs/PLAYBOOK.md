@@ -269,7 +269,7 @@ st-<tool>-agent/
 |------|------|
 | 代码仓库 | https://github.com/Yude-Jiang/st-deck-agent |
 | 部署说明 | 仓库根目录 `README.md` |
-| 使用者指南 | `ST China AI Force/User guide/ST_Deck_Agent_User_Guide.html` |
+| 使用者指南 | `docs/ST_Deck_Agent_User_Guide.md` · [HTML](ST_Deck_Agent_User_Guide.html) |
 | 品牌 Skill | `workspace_template/skills/st-ppt-brand/SKILL.md` |
 
 ---
