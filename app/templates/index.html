@@ -157,7 +157,7 @@
   .compare-row figcaption{font-size:11px;color:var(--faint);margin-bottom:6px;font-weight:bold;}
   .compare-row img{width:100%;border:1px solid var(--line);border-radius:8px;display:block;}
   .advice{margin-top:16px;padding:14px 16px;background:#F7F9FB;border:1px solid #ECF0F3;border-radius:10px;font-size:13px;line-height:1.6;white-space:pre-wrap;}
-  #panelRefresh{display:none;}
+  #panelRefresh.hidden,#panelGen.hidden{display:none !important;}
 </style>
 </head>
 <body>
@@ -229,7 +229,7 @@
     </div>
   </section>
 
-  <section class="panel" id="panelRefresh">
+  <section class="panel hidden" id="panelRefresh">
     <div class="phead"><span class="accent" style="background:var(--yellow)"></span><h2 data-i18n="panelRefresh">Deck 焕新</h2><span class="sub" data-i18n="panelRefreshSub">上传自有 PPT，仅做视觉标准化</span></div>
     <div class="body">
       <ul class="promises">
@@ -938,8 +938,8 @@ function showPhase(which) {
 function setUiMode(mode) {
   uiMode = mode;
   const refresh = mode === 'refresh';
-  $('#panelGen').style.display = refresh ? 'none' : '';
-  $('#panelRefresh').style.display = refresh ? '' : 'none';
+  $('#panelGen').classList.toggle('hidden', refresh);
+  $('#panelRefresh').classList.toggle('hidden', !refresh);
   $('#tabGen').classList.toggle('on', !refresh);
   $('#tabRefresh').classList.toggle('on', refresh);
   $('#edit').style.display = 'none';
