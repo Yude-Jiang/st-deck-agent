@@ -468,18 +468,52 @@ const I18N = {
 let currentSession = null;
 let chatActive = false;
 let pages = 1;
-let uiLang = 'zh';
-let deckLang = 'zh';
+let uiLang = 'en';
+let deckLang = 'en';
 let abortCtl = null;
 let hadError = false;
 let streamBuf = { thinking: null, text: null };
 let appConfig = { max_pages: 6, auth_required: false };
 let slideCount = 0;
 
+/** Map browser/system locale → zh | en | ja (fallback: en). */
+function detectBrowserLang() {
+  const candidates = [];
+  try {
+    if (Array.isArray(navigator.languages)) candidates.push(...navigator.languages);
+  } catch (_) {}
+  try {
+    if (navigator.language) candidates.push(navigator.language);
+  } catch (_) {}
+  try {
+    if (navigator.userLanguage) candidates.push(navigator.userLanguage);
+  } catch (_) {}
+  for (const raw of candidates) {
+    const tag = String(raw || '').trim().toLowerCase().replace(/_/g, '-');
+    if (!tag) continue;
+    const primary = tag.split('-')[0];
+    if (primary === 'zh' || tag.startsWith('zh')) return 'zh';
+    if (primary === 'ja' || tag.startsWith('ja')) return 'ja';
+    if (primary === 'en' || tag.startsWith('en')) return 'en';
+  }
+  return 'en';
+}
+
+const browserLang = detectBrowserLang();
+try {
+  const savedUi = localStorage.getItem(LS_UI_LANG);
+  uiLang = (savedUi && I18N[savedUi]) ? savedUi : browserLang;
+} catch (_) {
+  uiLang = browserLang;
+}
+try {
+  const savedDeck = localStorage.getItem(LS_DECK_LANG);
+  deckLang = (savedDeck && I18N[savedDeck]) ? savedDeck : uiLang;
+} catch (_) {
+  deckLang = uiLang;
+}
 try { currentSession = localStorage.getItem(LS_SESSION) || null; } catch (_) {}
 try { chatActive = localStorage.getItem(LS_CHAT) === '1'; } catch (_) {}
-try { uiLang = localStorage.getItem(LS_UI_LANG) || 'zh'; } catch (_) {}
-try { deckLang = localStorage.getItem(LS_DECK_LANG) || uiLang; } catch (_) {}
 
 function t(key, ...args) {
   const pack = I18N[uiLang] || I18N.zh;
