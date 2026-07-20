@@ -683,6 +683,7 @@ function applyI18n() {
   });
   rebuildChips();
   renderFiles();
+  if (typeof renderRefreshFiles === 'function') renderRefreshFiles();
   updateDoneCnt();
   syncChatToggle();
   updateConductModal();
