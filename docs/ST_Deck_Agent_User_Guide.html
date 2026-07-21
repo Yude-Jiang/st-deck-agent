@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ST Deck Agent — 用户手册</title>
+<style>
+  :root{--navy:#03234B;--yellow:#FFD200;--blue:#3CB4E6;--muted:#5A6675;--faint:#8A97A6;--line:#E5E9EE;--bg:#F1F4F7;--card:#fff;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:Arial,"Helvetica Neue","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--navy);background:var(--bg);line-height:1.65;font-size:15px;}
+  header{background:var(--navy);border-bottom:3px solid var(--yellow);padding:20px 32px;}
+  header h1{margin:0;color:#fff;font-size:22px;}
+  header p{margin:6px 0 0;color:#9BB8D0;font-size:13px;}
+  .wrap{max-width:900px;margin:0 auto;padding:28px 24px 48px;}
+  nav{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:24px;}
+  nav b{display:block;margin-bottom:10px;font-size:13px;color:var(--muted);}
+  nav a{color:#1F6D92;text-decoration:none;font-size:14px;margin-right:14px;}
+  nav a:hover{text-decoration:underline;}
+  section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin-bottom:18px;}
+  section h2{margin:0 0 14px;font-size:18px;border-left:4px solid var(--yellow);padding-left:12px;}
+  section h3{margin:18px 0 8px;font-size:15px;color:var(--muted);}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0;}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;}
+  th{background:#F7F9FB;font-weight:bold;}
+  ul,ol{padding-left:22px;}
+  li{margin-bottom:6px;}
+  code{background:#EEF1F4;padding:2px 6px;border-radius:4px;font-size:13px;}
+  .note{background:#FFF9DD;border:1px solid #F0E6A8;border-radius:8px;padding:12px 14px;font-size:14px;margin:12px 0;}
+  .en{border-top:1px dashed var(--line);margin-top:20px;padding-top:16px;font-size:14px;color:var(--muted);}
+  footer{text-align:center;font-size:12px;color:var(--faint);padding:20px;}
+  a.ext{color:#1F6D92;}
+</style>
+</head>
+<body>
+<header>
+  <h1>ST Deck Agent 用户手册</h1>
+  <p>品牌合规 PPT · 一键成稿 · 内部使用者指南（与 Web 产品功能同步）</p>
+</header>
+<div class="wrap">
+<nav>
+  <b>目录</b>
+  <a href="#intro">简介</a>
+  <a href="#access">访问与口令</a>
+  <a href="#conduct">使用须知</a>
+  <a href="#ui">界面</a>
+  <a href="#generate">生成 PPT</a>
+  <a href="#chat">对话模式</a>
+  <a href="#edit">在线编辑</a>
+  <a href="#download">下载与预览</a>
+  <a href="#limits">限制</a>
+  <a href="#faq">FAQ</a>
+  <a href="#refresh">Deck 焕新</a>
+</nav>
+
+<section id="intro">
+  <h2>1. 产品简介</h2>
+  <p>ST Deck Agent 帮助您在浏览器中根据文字需求与参考文档，自动生成符合 ST PPT 品牌规范的 <code>.pptx</code>，并提供逐页预览与下载。</p>
+  <p><strong>当前主能力：</strong>Deck 生成（一键成稿、可选对话模式 Beta、在线编辑）。</p>
+</section>
+
+<section id="access">
+  <h2>2. 访问地址与访问口令</h2>
+  <ol>
+    <li>向管理员获取 Cloud Run 服务 URL（服务名通常为 <code>st-deck-agent</code>）。</li>
+    <li>若页面右上角出现 <strong>访问口令</strong>，请输入管理员发放的 <code>ACCESS_TOKEN</code>；浏览器会记住口令，后续请求自动携带。</li>
+    <li>预览图与下载也可在链接后加 <code>?access_token=…</code>（无法自定义请求头时使用）。</li>
+  </ol>
+</section>
+
+<section id="conduct">
+  <h2>3. 使用须知</h2>
+  <p>每个浏览器会话首次打开时须确认弹窗，内容包括：</p>
+  <ul>
+    <li>遵守 STMicroelectronics《行为准则》；</li>
+    <li>不得上传或引用涉密、保密、出口管制或未公开内部资料；</li>
+    <li>使用前完成《人工智能法律合规意识》（Legal Awareness in Artificial Intelligence）培训；违规后果由用户承担。</li>
+  </ul>
+  <p>顶栏可切换界面语言（中文 / EN / 日本語），弹窗文案随之切换。</p>
+</section>
+
+<section id="ui">
+  <h2>4. 界面概览</h2>
+  <table>
+    <tr><th>左侧</th><td>需求、页数、幻灯片语言、参考文档、对话模式、生成按钮</td></tr>
+    <tr><th>右侧</th><td>工作台：待命说明 / 运行日志 / 预览与下载 / 编辑或对话</td></tr>
+  </table>
+  <p><strong>幻灯片语言</strong> 与 <strong>界面语言</strong> 相互独立：前者决定 PPT 内文字语言。</p>
+</section>
+
+<section id="generate">
+  <h2>5. 生成 PPT（推荐）</h2>
+  <h3>撰写需求</h3>
+  <p>说明受众、主题、必须包含的数据；可附 URL 供截图。点击「试试」示例可快速填入。快捷键：<code>Ctrl+Enter</code>（Mac：<code>⌘+Enter</code>）。</p>
+  <h3>页数</h3>
+  <div class="note">建议：同一主题先生成多页，再通过在线编辑或本机 PPT 合并，内容更丰富。仅 1 页时系统按「高管摘要单页」排版，避免三页故事挤在一页。</div>
+  <h3>参考文档</h3>
+  <p>PDF、Word、PPT、Excel、图片等。默认限制：单文件 10 MB、合计 30 MB、最多 5 个文件。</p>
+  <h3>运行中</h3>
+  <p>可点「停止」中断。完成后可下载并查看每页 PNG 预览。复杂任务可能触发约 9 分钟服务端超时，请减少页数或简化需求。</p>
+</section>
+
+<section id="chat">
+  <h2>6. 对话模式（Beta）</h2>
+  <p>开启后首轮只出大纲与追问，<strong>不会</strong>立即生成文件。在「继续对话」中补充信息，明确「确认」或 OK 后才开始 BUILD。</p>
+  <ul>
+    <li>需服务部署为单实例（<code>max-instances=1</code>），否则多轮对话可能失败；</li>
+    <li>实例重启或超过 24 小时会话过期后上下文丢失；</li>
+    <li>对话完成后不提供「在线编辑」，请继续在对话中说明修改。</li>
+  </ul>
+</section>
+
+<section id="edit">
+  <h2>7. 在线编辑</h2>
+  <p>仅在一键生成成功且未开对话模式时可用。用自然语言描述修改，点击「应用修改」；Agent 更新 <code>build.py</code> 并重新渲染预览。</p>
+</section>
+
+<section id="download">
+  <h2>8. 下载与预览</h2>
+  <ul>
+    <li>下载名一般为「主题-日期.pptx」；</li>
+    <li>网页预览使用 Liberation Sans，本机 PowerPoint 以 Arial 显示，细微差异正常；</li>
+    <li>会话约 24 小时后删除，请尽快下载；</li>
+    <li>对外材料请自行核对 closing / 商标等合规页。</li>
+  </ul>
+</section>
+
+<section id="limits">
+  <h2>9. 使用限制（默认）</h2>
+  <table>
+    <tr><th>每 IP 每分钟请求</th><td>10</td></tr>
+    <tr><th>最大页数</th><td>6</td></tr>
+    <tr><th>会话保留</th><td>24 小时</td></tr>
+    <tr><th>单次运行超时</th><td>约 540 秒</td></tr>
+  </table>
+</section>
+
+<section id="faq">
+  <h2>10. 常见问题</h2>
+  <p><strong>Unauthorized？</strong> 检查访问口令。</p>
+  <p><strong>生成失败？</strong> 简化需求、减少页数；联系管理员查日志。</p>
+  <p><strong>对话无响应？</strong> 可能多实例或会话过期，改用手动一键模式。</p>
+  <p><strong>预览与 PPT 不一致？</strong> 以本机 PowerPoint 为准。</p>
+  <p>部署与故障排查请参阅仓库 <a class="ext" href="https://github.com/Yude-Jiang/st-deck-agent/blob/main/README.md">README</a>。</p>
+</section>
+
+<section id="refresh">
+  <h2>11. Deck 焕新（规划中）</h2>
+  <p>未来将支持上传自有 <code>.pptx</code>，仅做版式与品牌视觉标准化、<strong>不改文案</strong>。默认环境尚未开放该 Tab。产品说明见仓库 <code>docs/PRD-DECK-REFRESH.md</code>。</p>
+  <div class="en">
+    <strong>Quick reference (EN):</strong> One-shot generate (default), optional Chat mode (Beta), post-build Edit; token auth; 6 pages / upload limits / 24h TTL.
+  </div>
+</section>
+</div>
+<footer>ST China AI Force · 2026 · Markdown 源文件：<code>docs/ST_Deck_Agent_User_Guide.md</code></footer>
+</body>
+</html>

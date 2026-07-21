@@ -14,6 +14,8 @@ uvicorn app.main:app --reload --port 8080
 
 Open http://localhost:8080
 
+**使用者（非部署）：** 请参阅 [docs/ST_Deck_Agent_User_Guide.md](docs/ST_Deck_Agent_User_Guide.md) 或 [HTML 版](docs/ST_Deck_Agent_User_Guide.html)。
+
 ## Deploy (Cloud Run)
 
 Cloud Run **service name:** `st-deck-agent` (keep this name — do not rename when redeploying).
