@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "purview_enabled": false,
+  "keyword_enabled": false,
+  "block_on_keyword_hit": true,
+  "block_on_protected_file": true,
+  "_comment": "v1: purview GUID layer reserved but disabled. Enable keyword_enabled when compliance_keywords.json is populated."
+}

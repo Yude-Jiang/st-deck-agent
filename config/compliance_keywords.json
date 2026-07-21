@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "match": {
+    "case_insensitive": true,
+    "merge_text_runs": true,
+    "prefer_longest_phrase_first": true
+  },
+  "scan_core_properties": true,
+  "phrases_en": [
+    "STRICT",
+    "CONFIDENTIAL",
+    "INTERNAL USE ONLY",
+    "INTERNAL ONLY",
+    "RESTRICTED",
+    "SECRET",
+    "TOP SECRET",
+    "CLASSIFIED",
+    "DO NOT COPY",
+    "DO NOT DISTRIBUTE"
+  ],
+  "phrases_zh": [
+    "严格",
+    "机密",
+    "保密",
+    "绝密",
+    "内部资料",
+    "内部使用",
+    "请勿外传",
+    "请勿复制"
+  ],
+  "_comment": "PRD §6.6 word list. Activate with compliance.json keyword_enabled=true."
+}

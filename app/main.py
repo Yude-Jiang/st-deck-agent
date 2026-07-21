@@ -35,7 +35,7 @@ from .runner import (
     run_edit,
     run_generate,
 )
-from .security import guard_request, user_facing_error
+from .security import guard_request, user_facing_error, verify_access
 from .sessions import (
     cleanup_expired_sessions,
     deck_download_name,
@@ -44,7 +44,11 @@ from .sessions import (
 )
 
 TEMPLATES = Path(__file__).resolve().parent / "templates"
-FILE_RE = re.compile(r"^(deck\.pptx|preview-\d+\.png)$")
+FILE_RE = re.compile(
+    r"^(deck\.pptx|deck-refreshed\.pptx|preview-\d+\.png|"
+    r"refresh-before-\d+\.png|refresh-after-\d+\.png)$"
+)
+SID_RE = re.compile(r"^(?:refresh-)?[a-f0-9]{12}$")
 logger = logging.getLogger(__name__)
 
 
@@ -99,6 +103,9 @@ async def api_config():
             "max_upload_files": config.MAX_UPLOAD_FILES,
             "max_upload_file_mb": config.MAX_UPLOAD_FILE_BYTES // (1024 * 1024),
             "languages": ["zh", "en", "ja"],
+            "refresh_enabled": config.REFRESH_ENABLED,
+            "refresh_implemented": config.REFRESH_IMPLEMENTED,
+            "max_refresh_pages": config.MAX_REFRESH_PAGES,
         },
         headers={"Cache-Control": "no-store"},
     )
@@ -277,13 +284,70 @@ async def chat_send_ep(req: Request):
     return StreamingResponse(_stream(factory), media_type="text/event-stream")
 
 
+# ---------------- Deck Refresh (feature-flagged) ----------------
+
+def _refresh_disabled() -> JSONResponse | None:
+    if not config.REFRESH_ENABLED:
+        return JSONResponse({"error": "not found"}, status_code=404)
+    return None
+
+
+@app.post("/refresh/scan")
+async def refresh_scan(
+    http_request: Request,
+    file: UploadFile = File(...),
+):
+    if disabled := _refresh_disabled():
+        return disabled
+    if rej := _reject(http_request):
+        return rej
+    if not config.REFRESH_IMPLEMENTED:
+        return JSONResponse({"error": "Deck Refresh is not available yet."}, status_code=503)
+    from .refresh.pipeline import run_refresh_scan
+
+    data = await file.read()
+    if len(data) > config.MAX_UPLOAD_FILE_BYTES:
+        mb = config.MAX_UPLOAD_FILE_BYTES // (1024 * 1024)
+        return JSONResponse({"error": f"Each file must be under {mb} MB."}, status_code=400)
+    result = await run_refresh_scan(file.filename or "deck.pptx", data)
+    if result.get("error"):
+        code = 400
+        return JSONResponse(result, status_code=code)
+    return JSONResponse(result)
+
+
+@app.post("/refresh/start")
+async def refresh_start(req: Request):
+    if disabled := _refresh_disabled():
+        return disabled
+    if rej := _reject(req):
+        return rej
+    if not config.REFRESH_IMPLEMENTED:
+        return JSONResponse({"error": "Deck Refresh is not available yet."}, status_code=503)
+    from .refresh.pipeline import run_refresh
+
+    body = await req.json()
+    sid = (body.get("session") or "").strip()
+    ack = bool(body.get("ack_keywords"))
+    language = normalize_lang(body.get("language"))
+    if not sid:
+        return JSONResponse({"error": "session required"}, status_code=400)
+
+    async def factory(emit):
+        return await run_refresh(sid, emit, ack_keywords=ack, language=language)
+
+    return StreamingResponse(_stream(factory), media_type="text/event-stream")
+
+
 # ---------------- file serving ----------------
 
 @app.get("/file/{sid}/{name}")
 async def get_file(request: Request, sid: str, name: str):
-    if rej := _reject(request):
-        return rej
-    if not re.match(r"^[a-f0-9]{12}$", sid):
+    # Auth only — do not rate-limit preview image loads (N slides × before/after).
+    auth_err = verify_access(request)
+    if auth_err:
+        return JSONResponse({"error": auth_err}, status_code=401)
+    if not SID_RE.match(sid):
         return JSONResponse({"error": "not found"}, status_code=404)
     if not FILE_RE.match(name):
         return JSONResponse({"error": "not allowed"}, status_code=403)
@@ -295,5 +359,12 @@ async def get_file(request: Request, sid: str, name: str):
         if name.endswith(".pptx")
         else "image/png"
     )
-    filename = deck_download_name(config.SESSIONS / sid) if name == "deck.pptx" else name
+    if name == "deck.pptx":
+        filename = deck_download_name(config.SESSIONS / sid)
+    elif name == "deck-refreshed.pptx":
+        from .refresh.sessions import refresh_download_name
+
+        filename = refresh_download_name(config.SESSIONS / sid)
+    else:
+        filename = name
     return FileResponse(str(path), media_type=media, filename=filename)

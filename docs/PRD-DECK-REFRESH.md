@@ -2,8 +2,8 @@
 
 | 字段 | 内容 |
 |---|---|
-| **文档版本** | v0.1 |
-| **状态** | 讨论定稿 / 待评审 |
+| **文档版本** | v0.2（独立分支 `cursor/deck-refresh-scaffold-cc52`） |
+| **状态** | 实施中 — Draft PR，验证后再 merge |
 | **产品** | ST Deck Agent |
 | **模块** | Deck 焕新（新增 Tab，与「Deck 生成」并列） |
 | **原则** | **不修改、不重构**现有 Deck 生成链路；焕新为**增量能力**，独立入口、独立会话与 API |
@@ -350,9 +350,12 @@ Agent prompt 必须包含：**Do not modify any text in the presentation file.**
 |---|---|
 | 是否追加 closing 页 | **否** |
 | v1 焕新强度 | **标准**（§5） |
-| 密级词表 | **固定列表**（§6.6） |
-| 是否改现有生成架构 | **否**，增量模块 |
+| 密级词表 | **关键词机制预留**，v1 默认空表/关闭；见 `config/compliance_keywords.json` |
+| Purview GUID | **v1 不实现**；配置与管道预留，v1.1+ 启用 |
+| refresh GCS 备份 | **禁止**（`REFRESH_GCS_BACKUP=false`） |
+| 是否改现有生成架构 | **否**，独立 PR / 分支 |
 | 删页 / 调序 / 改字 | **禁止** |
+| merge 策略 | **独立分支验证后再 merge `main`**；`REFRESH_ENABLED` 默认 `false` |
 
 ---
 
@@ -361,9 +364,11 @@ Agent prompt 必须包含：**Do not modify any text in the presentation file.**
 | # | 问题 | 建议默认值 |
 |---|---|---|
 | 1 | 焕新页数上限是否与 `MAX_PAGES` 共用 | 单独 `MAX_REFRESH_PAGES=20` |
-| 2 | refresh 会话是否禁止 GCS 备份 | 禁止（更敏感） |
+| 2 | refresh 会话是否禁止 GCS 备份 | **已决：禁止** |
 | 3 | Agent 建议是否默认折叠 | 默认展开「已自动修正」，建议折叠 |
-| 4 | 密级命中「internal」是否整词匹配 | v1 子串；「INTERNAL USE ONLY」优先长短语 |
+| 4 | 密级命中「internal」是否整词匹配 | v1 子串；启用关键词层时再定 |
+| 5 | Purview GUID | **v1 不做**；`config/purview_labels.json` 预留 |
+| 6 | 关键词词表 | **预留**；`keyword_enabled: false` 直至填表 |
 
 ---
 

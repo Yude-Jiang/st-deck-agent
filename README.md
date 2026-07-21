@@ -14,6 +14,8 @@ uvicorn app.main:app --reload --port 8080
 
 Open http://localhost:8080
 
+> **Cloud Shell:** Home disk is limited. If `pip install` fails with `No space left on device`, or `cursor_sdk` shows `SyntaxError: unterminated string literal`, see [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) — remove the partial install and use `pip install --no-cache-dir`.
+
 ## Deploy (Cloud Run)
 
 Cloud Run **service name:** `st-deck-agent` (keep this name — do not rename when redeploying).
@@ -48,7 +50,11 @@ gcloud run deploy st-deck-agent \
 | `SESSION_TTL_HOURS` | `24` | Auto-delete session workspaces after this age. |
 | `SESSION_CLEANUP_INTERVAL_SEC` | `3600` | How often to sweep expired sessions. |
 | `RUN_TIMEOUT_SEC` | `540` | Max seconds per agent run. |
-| `GCS_BUCKET` | *(empty)* | Optional. Persist session tarballs for restore after instance restart. |
+| `GCS_BUCKET` | *(empty)* | Optional. Persist session tarballs for restore after instance restart. **Not used for refresh sessions.** |
+| `REFRESH_ENABLED` | `false` | Expose Deck Refresh UI/API (independent module; default off). Set `true` to show Tab. |
+| `REFRESH_IMPLEMENTED` | `true` | End-to-end refresh pipeline available on this branch. |
+| `MAX_REFRESH_PAGES` | `20` | Max slides per refresh request. |
+| `REFRESH_GCS_BACKUP` | `false` | If `GCS_BUCKET` set, refresh sessions still skip backup when false. |
 | `SESSIONS_DIR` | `/tmp/sessions` | Workspace root (tmpfs on Cloud Run). |
 
 ## Modes
