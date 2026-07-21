@@ -116,19 +116,26 @@ def add_shaded_box(slide, x, y, w, h, lines, shade=GRAY_1, heading=None):
     return box
 ```
 
-## Section divider (navy bg + yellow bar)
+## Section divider (navy bg + vertically centered yellow bar)
 ```python
 def add_section_slide(prs, title):
+    """Navy field + vertically centered yellow bar. No top-flush bar, no bottom rule."""
     slide = prs.slides.add_slide(prs.slide_layouts[6])
-    bg = slide.background.fill; bg.solid(); bg.fore_color.rgb = ST_DARK_BLUE
-    bar = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE,
-                                 Inches(2.2), Inches(0.9), Inches(9.0), Inches(1.2))
-    fill(bar, ST_YELLOW); tf = bar.text_frame; no_autofit(tf); tf.vertical_anchor = MSO_ANCHOR.MIDDLE
-    tf.margin_left = Inches(0.4); tf.text = title
+    slide.background.fill.solid(); slide.background.fill.fore_color.rgb = ST_DARK_BLUE
+    bar_h = 1.15
+    bar_top = (7.5 - bar_h) / 2  # vertically centered — never pin to top edge
+    bar = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(3.35), Inches(bar_top),
+                                  Inches(13.333 - 3.35), Inches(bar_h))
+    fill(bar, ST_YELLOW)
+    tf = bar.text_frame; no_autofit(tf)
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    tf.margin_left = Inches(0.35)
+    tf.text = title
     style_runs(tf, ST_DARK_BLUE, 32, bold=True)
-    return slide
+    # Do NOT add a horizontal rule under the yellow bar.
 ```
-**Deprecated** — use `section_title_slide` in `st_brand.py` (top yellow bar per template).
+
+**Prefer** `section_title_slide` in `st_brand.py` (same geometry).
 
 ## Special slides (`st_brand.py`)
 See `references/special-slides.md` for reference images and anatomy.
@@ -143,7 +150,7 @@ section_title_slide(prs, "Section title", image_path="optional_hero.jpg", logo_p
 
 - **`presentation-title`**: full navy, left yellow accent, white title + presenter, logo top-right.
 - **`agenda`**: white field, “Agenda” top-right, 2-column yellow numbered tiles, logo bottom-left.
-- **`section-title`**: navy field, top yellow bar with section name, optional centered image, logo bottom-left.
+- **`section-title`**: navy field, **vertically centered** yellow bar with section name (~32 pt), optional lower-band image, logo bottom-left; **no** rule under the bar.
 
 ## Closing / trademark slide
 ```python

@@ -31,7 +31,7 @@ SLIDE_H = 7.5
 
 # Typography sampled from Presentation template.potx (slideMaster txStyles + layouts).
 # sz values in OOXML are hundredths of a point (3600 = 36 pt).
-TITLE_SIZE = 36           # content slide title (titleStyle lvl1, regular)
+TITLE_SIZE = 36           # content slide title (~32–40 pt range; default 36)
 TITLE_BOLD = False
 MSG_BAR_SIZE = 20         # key message bar (bodyStyle lvl2)
 BODY_SIZE = 14            # box / bullet body (template content examples)
@@ -46,9 +46,10 @@ LABEL_SIZE = 11           # footer, slide number, axis labels
 FOOTNOTE_SIZE = 8         # closing legal text
 AGENDA_TOPIC_SIZE = 28    # Agenda layout numbered tiles + topics
 PRESENTATION_TITLE_SIZE = 36
-SECTION_TITLE_SIZE = 36
+SECTION_TITLE_SIZE = 32   # section yellow-bar title (centered bar layout)
 CLOSING_TAGLINE_SIZE = 32
 SUB_SIZE = 12             # secondary line under a box header
+BILINGUAL_EN_SIZE = 14    # EN subtitle under CN title / insight EN line
 
 
 # Dark fills: white text. Light fills: ST Dark Blue text.
@@ -159,11 +160,21 @@ def agenda_slide(prs, topics, title="Agenda", logo_path=None, columns=2):
 
 
 def section_title_slide(prs, title, image_path=None, logo_path=None):
-    """Section break — navy field, top yellow bar, optional hero image (see special-slides.md)."""
+    """Section break — navy field, vertically centered yellow bar (see special-slides.md).
+
+    Do NOT pin the yellow bar to the top edge; do NOT draw a rule under the bar.
+    """
     slide = title_only_slide(prs)
     _slide_bg(slide, ST_DARK_BLUE)
-    bar = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(3.35), Inches(0),
-                                 Inches(SLIDE_W - 3.35), Inches(1.15))
+    bar_h = 1.15
+    bar_top = (SLIDE_H - bar_h) / 2  # vertically centered
+    bar = slide.shapes.add_shape(
+        MSO_SHAPE.RECTANGLE,
+        Inches(3.35),
+        Inches(bar_top),
+        Inches(SLIDE_W - 3.35),
+        Inches(bar_h),
+    )
     fill(bar, ST_YELLOW)
     tf = bar.text_frame
     no_autofit(tf)
@@ -172,11 +183,16 @@ def section_title_slide(prs, title, image_path=None, logo_path=None):
     tf.text = title
     _style(tf, ST_DARK_BLUE, SECTION_TITLE_SIZE, bold=True, align=PP_ALIGN.LEFT)
     if image_path:
-        slide.shapes.add_picture(image_path, Inches(2.2), Inches(1.65),
-                                 width=Inches(8.9), height=Inches(4.35))
-    rule = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.45), Inches(6.72),
-                                  Inches(12.4), Inches(0.02))
-    fill(rule, GRAY_3)
+        # Optional hero sits in the lower band below the centered bar.
+        img_top = bar_top + bar_h + 0.25
+        img_h = max(0.8, SLIDE_H - img_top - 0.85)
+        slide.shapes.add_picture(
+            image_path,
+            Inches(2.2),
+            Inches(img_top),
+            width=Inches(8.9),
+            height=Inches(img_h),
+        )
     _place_logo(slide, logo_path, 0.45, 6.85, height=0.38)
     return slide
 
@@ -660,6 +676,120 @@ def footer(slide, text):
         r.font.size = Pt(LABEL_SIZE)
         r.font.color.rgb = ST_DARK_BLUE
     return tb
+
+
+def bilingual_title(slide, zh_title, en_subtitle, left=0.45, top=0.28, width=12.4):
+    """CN bold title + EN italic slate subtitle (China diagnostic / bilingual decks)."""
+    tb = slide.shapes.add_textbox(Inches(left), Inches(top), Inches(width), Inches(1.05))
+    tf = tb.text_frame
+    no_autofit(tf)
+    tf.clear()
+    p0 = tf.paragraphs[0]
+    p0.text = zh_title
+    p0.alignment = PP_ALIGN.LEFT
+    for r in p0.runs:
+        r.font.name = FONT
+        r.font.size = Pt(TITLE_SIZE)
+        r.font.bold = True
+        r.font.color.rgb = ST_DARK_BLUE
+        r.font.italic = False
+    p1 = tf.add_paragraph()
+    p1.text = en_subtitle
+    p1.alignment = PP_ALIGN.LEFT
+    for r in p1.runs:
+        r.font.name = FONT
+        r.font.size = Pt(BILINGUAL_EN_SIZE)
+        r.font.bold = False
+        r.font.italic = True
+        r.font.color.rgb = SLATE
+    return tb
+
+
+def insight_stack(slide, rows, left=0.45, top=2.45, width=7.8, row_h=0.85, gap=0.12):
+    """Stacked gray insight rows with navy left accent; CN + EN lines per row.
+
+    Each row dict: {"zh_title": "...", "zh": "...", "en": "..."}.
+    """
+    shapes = []
+    accent_w = 0.12
+    for i, row in enumerate(rows):
+        y = top + i * (row_h + gap)
+        accent = slide.shapes.add_shape(
+            MSO_SHAPE.RECTANGLE, Inches(left), Inches(y), Inches(accent_w), Inches(row_h)
+        )
+        fill(accent, ST_DARK_BLUE)
+        body = slide.shapes.add_shape(
+            MSO_SHAPE.RECTANGLE,
+            Inches(left + accent_w),
+            Inches(y),
+            Inches(width - accent_w),
+            Inches(row_h),
+        )
+        fill(body, GRAY_1)
+        tf = body.text_frame
+        no_autofit(tf)
+        tf.margin_left = Inches(0.18)
+        tf.margin_top = Inches(0.08)
+        tf.clear()
+        zh_title = row.get("zh_title") or ""
+        zh = row.get("zh") or ""
+        en = row.get("en") or ""
+        p0 = tf.paragraphs[0]
+        p0.text = f"{zh_title}：{zh}" if zh_title else zh
+        for r in p0.runs:
+            r.font.name = FONT
+            r.font.size = Pt(BODY_SIZE)
+            r.font.bold = True
+            r.font.color.rgb = ST_DARK_BLUE
+        if en:
+            p1 = tf.add_paragraph()
+            p1.text = en
+            for r in p1.runs:
+                r.font.name = FONT
+                r.font.size = Pt(BILINGUAL_EN_SIZE)
+                r.font.bold = False
+                r.font.italic = False
+                r.font.color.rgb = SLATE
+        shapes.extend([accent, body])
+    return shapes
+
+
+def callout_panel(slide, left, top, width, height, title, bullets):
+    """Light callout panel with header + bullet lines (e.g. Gen AI 引荐)."""
+    box_shape = slide.shapes.add_shape(
+        MSO_SHAPE.RECTANGLE, Inches(left), Inches(top), Inches(width), Inches(height)
+    )
+    fill(box_shape, GRAY_1)
+    hdr_h = 0.42
+    hdr = slide.shapes.add_shape(
+        MSO_SHAPE.RECTANGLE, Inches(left), Inches(top), Inches(width), Inches(hdr_h)
+    )
+    fill(hdr, ST_LIGHT_BLUE)
+    htf = hdr.text_frame
+    no_autofit(htf)
+    htf.margin_left = Inches(0.15)
+    htf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    htf.text = title
+    _style(htf, ST_DARK_BLUE, BODY_SIZE, bold=True, align=PP_ALIGN.LEFT)
+    body = slide.shapes.add_textbox(
+        Inches(left + 0.15),
+        Inches(top + hdr_h + 0.08),
+        Inches(width - 0.3),
+        Inches(height - hdr_h - 0.15),
+    )
+    btf = body.text_frame
+    no_autofit(btf)
+    btf.word_wrap = True
+    btf.clear()
+    for i, line in enumerate(bullets or []):
+        p = btf.paragraphs[0] if i == 0 else btf.add_paragraph()
+        p.text = f"• {line}"
+        p.level = 0
+        for r in p.runs:
+            r.font.name = FONT
+            r.font.size = Pt(BODY_SIZE)
+            r.font.color.rgb = ST_DARK_BLUE
+    return box_shape
 
 
 CLOSING_FOOTER = (

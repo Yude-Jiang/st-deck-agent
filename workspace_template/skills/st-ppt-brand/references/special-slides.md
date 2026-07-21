@@ -54,19 +54,20 @@ Reference images are in this folder.
 
 ## 3. `section-title` — Section divider
 
-**Reference:** [section-title.png](section-title.png)
+**Reference:** [section-title.png](section-title.png) *(visual may lag code; follow rules below)*
 
 **Use for:** breaking the deck into chapters (before a group of content slides).
 
 **Structure:**
 - **Full-bleed ST Dark Blue** background.
-- **Top yellow bar:** spans from ~¼ slide width to the right edge; height ~1.15 in.
-  - **Section name** in **ST Dark Blue** bold Arial (~30 pt), left-aligned inside the bar.
-- **Optional hero image:** centered in the body (below the bar); lock aspect ratio.
-- **Footer:** light dotted rule above the logo safe zone; **ST logo** bottom-left.
+- **Yellow bar vertically centered** (not top-aligned / 顶格): height ~1.15 in, spans from
+  ~¼ slide width to the right edge.
+  - **Section name** in **ST Dark Blue** bold Arial (~32 pt), left-aligned inside the bar.
+- **No** thin horizontal rule under the yellow bar / above the footer.
+- **Optional hero image:** lower band below the centered bar; lock aspect ratio.
+- **ST logo:** bottom-left.
 
-**No** message bar. Do not reuse the old centered yellow “section divider” pattern —
-use this top-bar layout instead.
+**No** message bar.
 
 ---
 

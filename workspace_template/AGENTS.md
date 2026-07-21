@@ -57,7 +57,12 @@ Follow this loop exactly (it mirrors a careful designer):
   `left_image_icon_rows_slide`, `left_image_tiered_list_slide`, `migration_timeline_circles_slide`,
   `box`, `bullet_box`, `add_cards_row`, `add_activation_timeline`,
   `timeline_template_slide`, `arrow`, `dashed_container`, `label`, `footer`,
-  `closing_slide`, and **`text_on(fill_color)`** for contrast.
+  `closing_slide`, **`bilingual_title` / `insight_stack` / `callout_panel`** (CN+EN
+  diagnostic decks), and **`text_on(fill_color)`** for contrast.
+- **Section dividers:** use `section_title_slide` — yellow bar **vertically centered**,
+  no rule under the bar (see `skills/st-ppt-brand/SKILL.md`).
+- **Bilingual China diagnostic decks:** follow the skill’s bilingual pattern
+  (`bilingual_title` + yellow message bar + `insight_stack` + optional `callout_panel`).
 - For roadmap / GTM / campaign calendars, pick the matching layout archetype:
   - **`timeline-content-promotion-lanes`** — MCU / software activation plans (content assets +
     promotion lanes). Use `timeline_template_slide(...)` or `add_activation_timeline(...)`.
