@@ -73,8 +73,9 @@ constants in `st_brand.py` — do not hard-code ad-hoc sizes in build scripts.
 
 | Element | Size | Notes |
 |---|---|---|
-| Content slide title | **36 pt** | Arial, regular weight (`TITLE_SIZE`, `TITLE_BOLD=False`) |
-| Presentation / section title | **36 pt** | Bold on special slides (`PRESENTATION_TITLE_SIZE`, `SECTION_TITLE_SIZE`) |
+| Content slide title | **~32–40 pt** (default **36**) | Arial, regular (`TITLE_SIZE`, `TITLE_BOLD=False`) |
+| Presentation title | **36 pt** | Bold on cover (`PRESENTATION_TITLE_SIZE`) |
+| Section title (yellow bar) | **32 pt** | Bold, vertically centered bar (`SECTION_TITLE_SIZE`) |
 | Agenda topic + number | **28 pt** | Yellow tile + topic text (`AGENDA_TOPIC_SIZE`) |
 | Key message bar | **20 pt Arial bold** | `MSG_BAR_SIZE` — no exceptions |
 | Body / bullets in boxes | **14 pt** | `BODY_SIZE` |
